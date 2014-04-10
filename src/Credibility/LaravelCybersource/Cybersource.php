@@ -1,5 +1,9 @@
 <?php namespace Credibility\LaravelCybersource;
 
+/**
+ * Class Cybersource
+ * @package Credibility\LaravelCybersource
+ */
 class Cybersource {
 
     private $requester;

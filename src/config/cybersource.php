@@ -11,7 +11,7 @@ return array(
      * The Endpoint to hit
      * Change between test and prod environments
      */
-    'url_endpoint' => '',
+    'wsdl_endpoint' => '',
 
 
     /**

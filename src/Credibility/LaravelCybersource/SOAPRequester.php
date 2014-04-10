@@ -1,7 +1,5 @@
 <?php namespace Credibility\LaravelCybersource;
 
-use BeSimple\SoapClient\SoapClient;
-
 /**
  * Class SOAPRequester creates SOAP requests for Cybersource and uses
  * the $soapClient to send requests out to a specific url

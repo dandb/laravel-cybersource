@@ -1,7 +1,7 @@
 <?php
 
 use LaravelCybersource\TestCase;
-use Mockery as m;
+use \Mockery as m;
 
 class CybersourceTest extends TestCase {
 
@@ -11,7 +11,6 @@ class CybersourceTest extends TestCase {
     {
         parent::setUp();
         $this->mockRequester = m::mock('soapRequester');
-
     }
 
 
