@@ -1,0 +1,29 @@
+{
+    "name": "credibility/laravel-cybersource",
+    "description": "",
+    "authors": [
+        {
+            "name": "Credibility",
+            "email": "credibility@dandb.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+
+        "illuminate/support": "4.0.*",
+		"besimple/soap-client": "0.2.*@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "4.0.*",
+
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Credibility\\LaravelCybersource\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}
