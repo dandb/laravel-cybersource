@@ -2,11 +2,11 @@
 
 namespace LaravelCybersource;
 
-use \Mockery as m;
+use Mockery as m;
 
 class TestCase extends \PHPUnit_Framework_TestCase {
 
-    private $mockClient;
+    protected $mockClient;
 
     public function setUp()
     {
