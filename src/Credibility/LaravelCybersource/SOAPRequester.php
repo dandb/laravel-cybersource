@@ -14,13 +14,9 @@ class SOAPRequester {
         $this->soapClient = $soapClient;
     }
 
-    public function send($request)
+    public function send($request, $location, $action, $version)
     {
         $request = $this->createRequest($request);
-
-        $location = '';
-        $action = '';
-        $version = '';
 
         return $this->soapClient->doRequest($request, $location, $action, $version);
     }
@@ -30,4 +26,4 @@ class SOAPRequester {
         return $request;
     }
 
-} 
+}

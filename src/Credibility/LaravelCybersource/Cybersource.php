@@ -13,7 +13,9 @@ class Cybersource {
         $this->requester = $requester;
     }
 
+    public function getSubscriptionStatus()
+    {
 
-
+    }
 
 } 
