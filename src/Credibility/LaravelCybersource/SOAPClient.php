@@ -27,6 +27,8 @@ class SOAPClient extends BeSimpleSoapClient {
     public function __construct()
     {
         $this->wsdl = \Config::get('laravel-cybersource::cybersource.wsdl_endpoint');
+        $this->merchantId = \Config::get('laravel-cybersource::cybersource.merchant_id');
+        $this->transactionId = \Config::get('laravel-cybersource::cybersource.transaction_id');
         parent::__construct($this->wsdl, null);
     }
 

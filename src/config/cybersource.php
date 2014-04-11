@@ -13,6 +13,7 @@ return array(
      */
     'wsdl_endpoint' => '',
 
+    'outbound_merchant_id' => '',
 
     /**
      * Both the merchant and transaction IDs
