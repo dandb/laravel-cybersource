@@ -16,12 +16,18 @@ class SOAPRequester {
 
     public function send($request)
     {
+        $request = $this->createRequest($request);
 
+        $location = '';
+        $action = '';
+        $version = '';
+
+        return $this->soapClient->doRequest($request, $location, $action, $version);
     }
 
     protected function createRequest($request)
     {
-
+        return $request;
     }
 
 } 
