@@ -24,7 +24,7 @@ class CybersourceHelper {
         return explode(",", $csv);
     }
 
-    public static function arrayToCsv($array) {
+    public static function arrayToCsv(array $array) {
         return implode(',', $array);
     }
 
