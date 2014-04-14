@@ -6,23 +6,27 @@ use \Mockery as m;
 
 class SOAPClientTest extends TestCase {
 
+    private $client;
+
+    public function setUp()
+    {
+        parent::setUp();
+        $this->client = new SOAPClient(null, $this->mockApp);
+    }
+
     public function testConstruct()
     {
-        $client = new SOAPClient(null, $this->mockApp);
-
         //only need to test creation with WSDL
-        $this->assertNotNull($client);
+        $this->assertNotNull($this->client);
     }
 
     public function testGetInstance()
     {
-        $client = new SOAPClient(null, $this->mockApp);
-
-        $this->timeout = 10;
+        $timeout = 10;
 
         $contextOpts = array(
             'http' => array(
-                'timeout' => $this->timeout
+                'timeout' => $timeout
             )
         );
 
@@ -32,12 +36,25 @@ class SOAPClientTest extends TestCase {
             'compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP | SOAP_COMPRESSION_DEFLATE,
             'encoding' => 'utf-8',
             'exceptions' => true,
-            'connection_timeout' => $this->timeout,
+            'connection_timeout' => $timeout,
             'stream_context' => $context,
             'cache_wsdl' => WSDL_CACHE_MEMORY
         );
 
         $newClient = SOAPClient::getInstance($soapOts);
+    }
+
+    public function testAddWSSEToken()
+    {
+        $this->client->addWSSEToken();
+
+        $headers = $this->client->__default_headers[0];
+
+        $this->assertInstanceOf('SoapHeader', $headers);
+        $this->assertEquals(SOAPClient::WSSE_NAMESPACE, $headers->namespace);
+        $this->assertEquals('Security', $headers->name);
+
+        var_dump($headers->data);
     }
 
 } 

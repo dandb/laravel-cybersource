@@ -1,5 +1,6 @@
 <?php namespace Credibility\LaravelCybersource;
 
+use Credibility\LaravelCybersource\Exceptions\CybersourceException;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\App;
@@ -112,6 +113,13 @@ class Cybersource {
         'JCB' => '007',
     );
 
+    private $report_types = array(
+        'payment_submission_detail' 	=> 'PaymentSubmissionDetailReport',
+        'subscription_detail' 			=> 'SubscriptionDetailReport',
+        'transaction_detail' 			=> 'TransactionDetailReport',
+        'transaction_exception_detail' 	=> 'TransactionExceptionDetailReport',
+    );
+
 
     public function __construct($requester, Application $app)
     {
@@ -136,12 +144,11 @@ class Cybersource {
 
     }
 
-
     public function createSubscriptionRequest($subscriptionId)
     {
         $request = new CybersourceSOAPModel(
             $this->app->environment(),
-            $this->app->make('config')->get('laravel-cybersource::cybersource.merchant_id')
+            $this->app->make('config')->get('laravel-cybersource::merchant_id')
         );
 
         $subscriptionRetrieveRequest = new CybersourceSOAPModel();
@@ -157,5 +164,91 @@ class Cybersource {
         return $request;
     }
 
+    // Reports
+
+    public function getSubscriptions($date)
+    {
+        return $this->sendReportRequest('SubscriptionDetailReport', $date);
+    }
+
+    public function getPaymentSubmissions($date)
+    {
+        return $this->sendReportRequest('PaymentSubmissionDetailReport', $date);
+    }
+
+    public function getTransactions($date)
+    {
+        return $this->sendReportRequest('TransactionDetailReport', $date);
+    }
+
+    public function getTransactionException($date)
+    {
+        return $this->sendReportRequest('TransactionExceptionDetailReport', $date);
+    }
+
+    private function sendReportRequest($report_name, $date)
+    {
+        $merchant_id = $this->app->make('config')->get('laravel-cybersource::merchant_id');
+        $endpoint = $this->app->make('config')->get('laravel-cybersource::reports.endpoint');
+        $username = $this->app->make('config')->get('laravel-cybersource::username');
+        $password = $this->app->make('config')->get('laravel-cybersource::password');
+
+        if ( !$date instanceof \DateTime ) {
+            $date = new \DateTime($date);
+        }
+
+        // get the right host and substitute in our username and password for http basic authentication
+        $url =
+            'https://' .
+            $username . ':' .
+            $password . '@' .
+            $endpoint .
+            '/DownloadReport/' .
+            $date->format('Y/m/d/') .
+            $merchant_id . '/' .
+            $report_name . '.csv';
+
+        $result = @file_get_contents( $url );
+
+        if ( $result === false ) {
+
+            // this would be a lot easier if we could just have an error handler that throws exceptions, but here it is...
+            $error = error_get_last();
+
+            if ( isset( $error['message'] ) ) {
+
+                // try to parse out the specific message, minus the function and crap
+                $message = $error['message'];
+
+                preg_match( '/failed to open stream: (.*)/', $message, $matches );
+
+                if ( isset( $matches[1] ) ) {
+                    $message = $matches[1];
+                }
+
+                if ( strpos( $message, 'The report requested cannot be found on this server' ) !== false ) {
+                    throw new CybersourceException( $message, 400 );		// code 400? it's an HTTP 400 error. get it?
+                }
+                else {
+                    // we don't know exactly what type of error, throw a generic error
+                    throw new CybersourceException( $message );
+                }
+
+            }
+
+            // something happened, but we dont' know what - die!
+            throw new CybersourceException();
+
+        }
+
+        // parse out the results
+        // but first, remove the first line - it's a header
+        $result = substr( $result, strpos( $result, "\n" ) + strlen( "\n" ) );
+
+        $records = CybersourceHelper::str_getcsv($result);
+
+        return $records;
+
+    }
 
 } 

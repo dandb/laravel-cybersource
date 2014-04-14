@@ -3,6 +3,7 @@
 use Credibility\LaravelCybersource\Exceptions\CybersourceConnectionException;
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
+use Illuminate\Foundation\Application;
 
 /**
  * Class SOAPRequester creates SOAP requests for Cybersource and uses
@@ -11,14 +12,18 @@ use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
  */
 class SOAPRequester {
 
-    private $soapClient;
-    protected $timeout;
+    /**
+     * @var Illuminate\Foundation\Application
+     */
+    public $app;
+    public $soapClient;
+    public $timeout;
 
-
-    public function __construct($soapClient)
+    public function __construct($soapClient, Application $app)
     {
+        $this->app = $app;
         $this->soapClient = $soapClient;
-        $this->timeout = \Config::get('laravel-cybersource::cybersource.timeout');
+        $this->timeout = $this->app->make('config')->get('laravel-cybersource::timeout');
     }
 
     public function send(CybersourceSOAPModel $request, $location, $action, $version)

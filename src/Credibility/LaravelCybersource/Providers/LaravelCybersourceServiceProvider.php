@@ -31,9 +31,10 @@ class LaravelCybersourceServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
+        $this->package('credibility/laravel-cybersource');
         $this->app->bind('cybersource', function($app) {
             $client = new SOAPClient($app);
-            $requester = new SOAPRequester($client);
+            $requester = new SOAPRequester($client, $app);
             return new Cybersource($requester, $app);
         });
 	}

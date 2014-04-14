@@ -14,14 +14,17 @@ class TestCase extends \PHPUnit_Framework_TestCase {
     {
         $mockConfig = m::mock('Config');
         $mockConfig->shouldReceive('get')
-            ->with('laravel-cybersource::cybersource.merchant_id')
+            ->with('laravel-cybersource::merchant_id')
             ->andReturn($this->merchantId);
         $mockConfig->shouldReceive('get')
-            ->with('laravel-cybersource::cybersource.wsdl_endpoint')
+            ->with('laravel-cybersource::wsdl_endpoint')
             ->andReturn('https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor/CyberSourceTransaction_1.26.wsdl');
         $mockConfig->shouldReceive('get')
-            ->with('laravel-cybersource::cybersource.transaction_id')
+            ->with('laravel-cybersource::transaction_id')
             ->andReturn('test_trans_id');
+        $mockConfig->shouldReceive('get')
+            ->with('laravel-cybersource::timeout')
+            ->andReturn(10);
 
         $this->mockApp = m::mock('Illuminate\Foundation\Application');
 
