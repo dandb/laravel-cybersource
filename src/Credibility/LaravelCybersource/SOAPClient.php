@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Log;
  */
 class SOAPClient extends BeSimpleSoapClient {
 
-    public static $domVersion = '1.0';
+    const DOM_VERSION = '1.0';
 
-    protected static $soapHeaderPreUser = '<SOAP-ENV:Header xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsse:Security SOAP-ENV:mustUnderstand="1"><wsse:UsernameToken><wsse:Username>';
-    protected static $soapHeaderPrePassword = '</wsse:Username><wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">';
-    protected static $soapHeaderFinal = '</wsse:Password></wsse:UsernameToken></wsse:Security></SOAP-ENV:Header>';
+    const SOAP_HEADER_PRE_USER = '<SOAP-ENV:Header xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"><wsse:Security SOAP-ENV:mustUnderstand="1"><wsse:UsernameToken><wsse:Username>';
+    const SOAP_HEADER_PRE_PASS = '</wsse:Username><wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">';
+    const SOAP_HEADER_FINAL = '</wsse:Password></wsse:UsernameToken></wsse:Security></SOAP-ENV:Header>';
 
     protected $wsdl;
     protected $merchantId;
@@ -44,10 +44,12 @@ class SOAPClient extends BeSimpleSoapClient {
      */
     public function doRequest($request, $location, $action, $version, $one_way = null)
     {
-        $header = static::$soapHeaderPreUser . $this->merchantId . static::$soapHeaderPrePassword . $this->transactionId . static::$soapHeaderFinal;
+        $header = self::SOAP_HEADER_PRE_USER . $this->merchantId .
+            self::SOAP_HEADER_PRE_PASS . $this->transactionId .
+            self::SOAP_HEADER_FINAL;
 
-        $requestDOM = new \DOMDocument(static::$domVersion);
-        $soapHeaderDOM = new \DOMDocument(static::$domVersion);
+        $requestDOM = new \DOMDocument(self::DOM_VERSION);
+        $soapHeaderDOM = new \DOMDocument(self::DOM_VERSION);
 
         try {
             $requestDOM->loadXML($request);

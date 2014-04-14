@@ -6,11 +6,12 @@ use \Mockery as m;
 
 class TestCase extends \PHPUnit_Framework_TestCase {
 
-    protected $mockClient;
+    protected $environment = 'testing';
+    protected $merchantId = 'test-merchant-id';
 
     public function setUp()
     {
-        $this->mockClient = m::mock('mockSoapClient');
+
     }
 
     public function tearDown()

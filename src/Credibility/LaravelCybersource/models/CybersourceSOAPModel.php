@@ -2,12 +2,12 @@
 
 class CybersourceSOAPModel {
 
-    public function __construct()
+    public function __construct($clientEnv = null, $merchantId = null)
     {
-        $this->clientLibrary = "PHP";
+        $this->clientLibrary = 'PHP';
         $this->clientLibraryVersion = phpversion();
-//        $this->clientEnvironment = \App::environment();
-//        $this->merchantID = \Config::get('laravel-cybersource::cybersource.outbound_merchant_id');
+        $this->clientEnvironment = $clientEnv;
+        $this->merchantID = $merchantId;
     }
 
     public function __set($name, $value)
