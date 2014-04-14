@@ -22,6 +22,11 @@ return array(
     'transaction_id' => '',
 
     /**
+     * Timeout for requests
+     */
+    'timeout' => '',
+
+    /**
      * Cybersource Username/Password info
      */
     'username' => '',

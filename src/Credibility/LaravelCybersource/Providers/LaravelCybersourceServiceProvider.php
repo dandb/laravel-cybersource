@@ -1,5 +1,8 @@
 <?php namespace Credibility\LaravelCybersource\Providers;
 
+use Credibility\LaravelCybersource\Cybersource;
+use Credibility\LaravelCybersource\SOAPClient;
+use Credibility\LaravelCybersource\SOAPRequester;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelCybersourceServiceProvider extends ServiceProvider {
@@ -28,7 +31,11 @@ class LaravelCybersourceServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-
+        $this->app->bind('cybersource', function($app) {
+            $client = new SOAPClient();
+            $requester = new SOAPRequester($client);
+            return new Cybersource($requester, $app);
+        });
 	}
 
 	/**

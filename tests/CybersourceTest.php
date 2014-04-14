@@ -14,14 +14,17 @@ class CybersourceTest extends TestCase {
     {
         parent::setUp();
         $this->mockRequester = m::mock('soapRequester');
-
-        $this->cybersource = new Cybersource($this->mockRequester);
+        $this->cybersource = new Cybersource($this->mockRequester, $this->mockApp);
+        $this->cybersource->app = $this->mockApp;
     }
 
     public function testCreateSubscriptionRequest()
     {
-        $request = $this->cybersource->createSubscriptionRequest();
+        $request = $this->cybersource->createSubscriptionRequest('123');
 
+        $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceSOAPModel', $request);
+        $this->assertNotNull($request->clientEnvironment);
+        $this->assertNotNull($request->merchantID);
     }
 
 

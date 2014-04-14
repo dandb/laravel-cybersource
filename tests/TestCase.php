@@ -12,7 +12,20 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
     public function setUp()
     {
+        $mockConfig = m::mock('Config');
+        $mockConfig->shouldReceive('get')
+            ->with('laravel-cybersource::cybersource.merchant_id')
+            ->andReturn($this->merchantId);
 
+        $this->mockApp = m::mock('Illuminate\Foundation\Application');
+
+        $this->mockApp
+            ->shouldReceive('environment')
+            ->andReturn($this->environment);
+        $this->mockApp
+            ->shouldReceive('make')
+            ->with('config')
+            ->andReturn($mockConfig);
     }
 
     public function tearDown()

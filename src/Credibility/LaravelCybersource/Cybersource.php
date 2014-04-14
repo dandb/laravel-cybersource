@@ -1,6 +1,7 @@
 <?php namespace Credibility\LaravelCybersource;
 
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\App;
 
 /**
@@ -8,6 +9,11 @@ use Illuminate\Support\Facades\App;
  * @package Credibility\LaravelCybersource
  */
 class Cybersource {
+
+    /**
+     * @var Illuminate\Foundation\Application
+     */
+    public $app;
 
     private $requester;
 
@@ -107,9 +113,10 @@ class Cybersource {
     );
 
 
-    public function __construct($requester)
+    public function __construct($requester, Application $app)
     {
         $this->requester = $requester;
+        $this->app = $app;
     }
 
     public function getSubscriptionStatus($subscriptionId)
@@ -133,7 +140,8 @@ class Cybersource {
     public function createSubscriptionRequest($subscriptionId)
     {
         $request = new CybersourceSOAPModel(
-
+            $this->app->environment(),
+            $this->app->make('config')->get('laravel-cybersource::cybersource.merchant_id')
         );
 
         $subscriptionRetrieveRequest = new CybersourceSOAPModel();
