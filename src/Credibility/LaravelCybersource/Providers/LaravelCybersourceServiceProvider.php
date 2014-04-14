@@ -32,7 +32,7 @@ class LaravelCybersourceServiceProvider extends ServiceProvider {
 	public function register()
 	{
         $this->app->bind('cybersource', function($app) {
-            $client = new SOAPClient();
+            $client = new SOAPClient($app);
             $requester = new SOAPRequester($client);
             return new Cybersource($requester, $app);
         });

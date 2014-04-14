@@ -7,7 +7,6 @@ use \Mockery as m;
 class CybersourceTest extends TestCase {
 
     private $mockRequester;
-
     private $cybersource;
 
     public function setUp()
@@ -25,7 +24,12 @@ class CybersourceTest extends TestCase {
         $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceSOAPModel', $request);
         $this->assertNotNull($request->clientEnvironment);
         $this->assertNotNull($request->merchantID);
+
+        $this->assertEquals('true', $request->paySubscriptionRetrieveService->run);
+        $this->assertEquals('123', $request->recurringSubscriptionInfo->subscriptionID);
     }
+
+
 
 
 }
