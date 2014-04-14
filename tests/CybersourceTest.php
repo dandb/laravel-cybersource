@@ -14,6 +14,7 @@ class CybersourceTest extends TestCase {
     {
         parent::setUp();
         $this->mockRequester = m::mock('soapRequester');
+
         $this->cybersource = new Cybersource($this->mockRequester);
     }
 

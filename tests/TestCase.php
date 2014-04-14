@@ -8,6 +8,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 
     protected $environment = 'testing';
     protected $merchantId = 'test-merchant-id';
+    protected $mockApp;
 
     public function setUp()
     {

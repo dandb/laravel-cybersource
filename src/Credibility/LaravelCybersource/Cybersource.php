@@ -1,6 +1,7 @@
 <?php namespace Credibility\LaravelCybersource;
 
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
+use Illuminate\Support\Facades\App;
 
 /**
  * Class Cybersource
@@ -113,13 +114,37 @@ class Cybersource {
 
     public function getSubscriptionStatus($subscriptionId)
     {
-        $this->createSubscriptionRequest($subscriptionId);
+        $request = $this->createSubscriptionRequest($subscriptionId);
+
+        return $this->requester->send($request);
+    }
+
+    public function updateSubscription($subscriptionId)
+    {
+
+    }
+
+    public function cancelSubscription($subscriptionId)
+    {
+
     }
 
 
-    public function createSubscriptionRequest()
+    public function createSubscriptionRequest($subscriptionId)
     {
-        $request = new CybersourceSOAPModel();
+        $request = new CybersourceSOAPModel(
+
+        );
+
+        $subscriptionRetrieveRequest = new CybersourceSOAPModel();
+        $subscriptionRetrieveRequest->run = 'true';
+
+        $request->paySubscriptionRetrieveService = $subscriptionRetrieveRequest;
+
+        $subscriptionInfo = new CybersourceSOAPModel();
+        $subscriptionInfo->subscriptionID = $subscriptionId;
+
+        $request->recurringSubscriptionInfo = $subscriptionInfo;
 
         return $request;
     }

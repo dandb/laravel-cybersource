@@ -1,4 +1,6 @@
 <?php namespace Credibility\LaravelCybersource;
+use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
+use Illuminate\Foundation\Application;
 
 /**
  * Class SOAPRequester creates SOAP requests for Cybersource and uses
@@ -9,20 +11,27 @@ class SOAPRequester {
 
     private $soapClient;
 
-    public function __construct($soapClient)
+    public function __construct($soapClient, Application $app)
     {
         $this->soapClient = $soapClient;
+
     }
 
-    public function send($request, $location, $action, $version)
+    public function send(CybersourceSOAPModel $request, $location, $action, $version)
     {
-        $request = $this->createRequest($request);
+        $xmlRequest = $this->convertToXMLRequest($request);
 
-        return $this->soapClient->doRequest($request, $location, $action, $version);
+        return $this->soapClient->doRequest($xmlRequest, $location, $action, $version);
     }
 
-    protected function createRequest($request)
+    public function convertToXMLRequest(CybersourceSOAPModel $request)
     {
+        $contextOpts = array(
+            'http' => array(
+                'timeout' => ''
+            )
+        );
+
         return $request;
     }
 
