@@ -60,6 +60,22 @@ class CybersourceSOAPModelTest extends TestCase {
         $this->assertEquals('true', $obj->paySubscriptionRetrieveService->run);
     }
 
+    public function testToArrayCreatesArray()
+    {
+        $model = $this->getCybersourceSOAPModel();
+        $nested = new CybersourceSOAPModel();
+        $nested->run = 'true';
+        $model->paySubscriptionRetrieveService = $nested;
+
+        $array = $model->toArray();
+
+        $this->assertArrayHasKey('clientLibrary', $array);
+        $this->assertArrayHasKey('clientLibraryVersion', $array);
+        $this->assertArrayHasKey('clientEnvironment', $array);
+        $this->assertArrayHasKey('merchantID', $array);
+        $this->assertArrayHasKey('merchantReferenceCode', $array);
+    }
+
     private function getCybersourceSOAPModel()
     {
         return new CybersourceSOAPModel('PHP', phpversion(), $this->environment, $this->merchantId);

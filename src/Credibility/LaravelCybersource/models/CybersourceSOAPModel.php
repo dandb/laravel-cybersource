@@ -30,9 +30,10 @@ class CybersourceSOAPModel {
         return null;
     }
 
-    public function getData()
+    public function toArray()
     {
-        return $this->data;
+        $stdObj = $this->toStdObject();
+        return json_decode(json_encode($stdObj), true);
     }
 
     public function toStdObject()

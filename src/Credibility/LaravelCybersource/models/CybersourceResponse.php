@@ -1,8 +1,15 @@
 <?php namespace Credibility\LaravelCybersource\models;
 
+use Credibility\LaravelCybersource\Exceptions\CybersourceException;
+use Credibility\LaravelCybersource\Exceptions\CybersourceMissingDecisionException;
+use Credibility\LaravelCybersource\Exceptions\CybersourceMissingResponseCodeException;
+
 class CybersourceResponse {
 
     private $valid;
+    /**
+     * @var array
+     */
     private $response;
 
     private $resultCodes = array(
@@ -45,21 +52,27 @@ class CybersourceResponse {
         '520' => 'The authorization request was approved by the issuing bank but declined by CyberSource based on your Smart Authorization settings.',
     );
 
-    public function __construct($valid, $response = array())
+    public function __construct($response = array())
     {
-        $this->valid = $valid;
+        if(!isset($response['reasonCode'])) {
+            throw new CybersourceMissingResponseCodeException('Response Code Not Provided');
+        }
+        if(!isset($response['decision'])) {
+            throw new CybersourceMissingDecisionException('Response Code Not Provided');
+        }
         $this->response = $response;
+        $this->response['message'] = $this->resultCodes[$response['reasonCode']];
     }
 
     public function __set($name, $value)
     {
-        $this->response['metadata'][$name] = $value;
+        $this->response[$name] = $value;
     }
 
     public function __get($name)
     {
-        if(isset($this->response['metadata'][$name])) {
-            return $this->response['metadata'][$name];
+        if(isset($this->response[$name])) {
+            return $this->response[$name];
         }
         return null;
     }
@@ -69,7 +82,7 @@ class CybersourceResponse {
         return $this->valid;
     }
 
-    public function getResponseDetails()
+    public function getDetails()
     {
         return $this->response;
     }

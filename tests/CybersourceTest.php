@@ -29,6 +29,11 @@ class CybersourceTest extends TestCase {
         $this->assertEquals('123', $request->recurringSubscriptionInfo->subscriptionID);
     }
 
+    public function testConvertingFromModelToResponseWorks()
+    {
+
+    }
+
 
 
 

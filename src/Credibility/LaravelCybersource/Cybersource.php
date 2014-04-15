@@ -95,7 +95,7 @@ class Cybersource {
         $rawResponse = $this->requester->send($request);
         $response = $this->convertToResponse($rawResponse);
 
-        return $response;
+        return $response->getDetails();
     }
 
     public function updateSubscription($subscriptionId)
@@ -110,12 +110,7 @@ class Cybersource {
 
     public function createSubscriptionRequest($subscriptionId)
     {
-        $request = new CybersourceSOAPModel(
-            'PHP', phpversion(),
-            $this->app->environment(),
-            $this->app->make('config')->get('laravel-cybersource::merchant_id'),
-            'MRC-123'
-        );
+        $request = $this->createNewRequest();
 
         $subscriptionRetrieveRequest = new CybersourceSOAPModel();
         $subscriptionRetrieveRequest->run = 'true';
@@ -130,37 +125,22 @@ class Cybersource {
         return $request;
     }
 
-    private function convertToResponse(CybersourceSOAPModel $response)
+    public function convertToResponse(CybersourceSOAPModel $response)
     {
-        $response = array();
-        if($response->decision == 'ACCEPT') {
-
-        } else {
-
-        }
-
-        $responseObj = new CybersourceResponse($response);
-
-        /*
-         * if(!$this->isValid()) {
-            $message = 'Fatal Error - No Response code returned from Cybersource';
-            if(array_key_exists($model->reasonCode, $this->resultCodes)) {
-                $message = $this->resultCodes[$model->reasonCode];
-            }
-            $this->response = array(
-                'code' => $model->reasonCode,
-                'message' => $message,
-                'metadata' => array(
-                    'requestID' => $model->requestID,
-                    'requestToken' => $model->requestToken
-                )
-            );
-        } else {
-
-        }
-         */
+        $responseArr = $response->toArray();
+        $responseObj = new CybersourceResponse($responseArr);
 
         return $responseObj;
+    }
+
+    public function createNewRequest()
+    {
+        return new CybersourceSOAPModel(
+            'PHP', phpversion(),
+            $this->app->environment(),
+            $this->app->make('config')->get('laravel-cybersource::merchant_id'),
+            'MRC-123'
+        );
     }
 
 

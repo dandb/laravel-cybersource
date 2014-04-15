@@ -9,18 +9,26 @@ class CybersourceResponseTest extends TestCase {
 
     public function testResponseDoesNotBreak()
     {
-        $responseObj = new CybersourceResponse(false, array());
+        $responseObj = new CybersourceResponse(false, array('code' => 100));
 
         $this->assertFalse($responseObj->isValid());
-        $this->assertEmpty($responseObj->getResponseDetails());
+        $this->assertNotEmpty($responseObj->getResponseDetails());
     }
-
 
     public function testConstructionSetsValidity()
     {
-        $responseObj = new CybersourceResponse(true, array());
+        $responseObj = new CybersourceResponse(true, array('code' => 100));
 
         $this->assertTrue($responseObj->isValid());
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage Response Code Not Provided
+     */
+    public function testEmptyCodeThrowsError()
+    {
+        $responseObj = new CybersourceResponse(false, array());
     }
 
 
