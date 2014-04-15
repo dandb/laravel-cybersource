@@ -5,10 +5,6 @@ use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\App;
 
-/**
- * Class Cybersource
- * @package Credibility\LaravelCybersource
- */
 class Cybersource {
 
     /**
@@ -153,9 +149,9 @@ class Cybersource {
         );
 
         $subscriptionRetrieveRequest = new CybersourceSOAPModel();
-        $subscriptionRetrieveRequest->run = 'true';
 
         $request->paySubscriptionRetrieveService = $subscriptionRetrieveRequest;
+        $subscriptionRetrieveRequest->run = 'true';
 
         $subscriptionInfo = new CybersourceSOAPModel();
         $subscriptionInfo->subscriptionID = $subscriptionId;

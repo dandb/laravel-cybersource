@@ -4,6 +4,12 @@ class CybersourceSOAPModel {
 
     private $data;
 
+    private $runnable = array(
+        'paySubscriptionUpdateService',
+        'paySubscriptionRetrieveService',
+        'paySubscriptionDeleteService',
+    );
+
     public function __construct($clientLibrary = null, $clientLibVersion = null, $clientEnv = null, $merchantId = null)
     {
         $this->clientLibrary = $clientLibrary;
@@ -17,6 +23,10 @@ class CybersourceSOAPModel {
         $this->data[$name] = $value;
     }
 
+    public function __call($name, $args)
+    {
+    }
+
     public function __get($name)
     {
         if(isset($this->data[$name])) {
@@ -27,19 +37,20 @@ class CybersourceSOAPModel {
 
     public function toXML()
     {
-        $xml = '<?xml version="1.0" encoding="UTF-8" ?>' . "\n";
-        $xml = $this->createNestedArray($xml, $this);
+        $xml = '<requestMessage xmlns="urn:schemas-cybersource-com:transaction-data-1.92">';
+        $xml = $this->createNestedXML($xml, $this);
+        $xml .= '</requestMessage>';
 
         return $xml;
     }
 
-    private function createNestedArray($xml, $value)
+    private function createNestedXML($xml, $value)
     {
         if($value instanceof CybersourceSOAPModel) {
             foreach($value->data as $key => $subValue) {
                 if($subValue instanceof CybersourceSOAPModel) {
                     $xml .= '<' . $key . '>';
-                    $this->createNestedArray($xml, $subValue);
+                    $this->createNestedXML($xml, $subValue);
                     $xml .= '</' . $key . '>';
                 } else if(!is_null($subValue)) {
                     $xml .= '<' . $key . '>';

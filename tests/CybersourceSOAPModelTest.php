@@ -24,7 +24,7 @@ class CybersourceSOAPModelTest extends TestCase {
 
     public function testCreateNestedSOAPModel()
     {
-        $model = new CybersourceSOAPModel('PHP', phpversion(), $this->environment, $this->merchantId);
+        $model = $this->getCybersourceSOAPModel();
         $nested = new CybersourceSOAPModel();
 
         $model->nested = $nested;
@@ -36,7 +36,7 @@ class CybersourceSOAPModelTest extends TestCase {
 
     public function testToXMLCreatesWellFormedXML()
     {
-        $model = new CybersourceSOAPModel('PHP', phpversion(), $this->environment, $this->merchantId);
+        $model = $this->getCybersourceSOAPModel();
         $nested = new CybersourceSOAPModel();
 
         $nested->testValue = 'test';
@@ -44,8 +44,25 @@ class CybersourceSOAPModelTest extends TestCase {
 
         $xml = $model->toXML();
 
-        $this->assertStringStartsWith('<?xml', $xml);
+        $this->assertStringStartsWith('<requestMessage', $xml);
     }
 
+    public function ToXMLWithRunnableCreatesCorrectly()
+    {
+        $model = $this->getCybersourceSOAPModel();
+        $paySubscriptionRetrieveService = new CybersourceSOAPModel();
+        $paySubscriptionRetrieveService->run = true;
+
+        $model->paySubscriptionRetrieveService = $paySubscriptionRetrieveService;
+
+        $xml = $model->toXML();
+
+        var_dump($xml);
+    }
+
+    private function getCybersourceSOAPModel()
+    {
+        return new CybersourceSOAPModel('PHP', phpversion(), $this->environment, $this->merchantId);
+    }
 
 } 
