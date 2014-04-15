@@ -131,7 +131,7 @@ class Cybersource {
     {
         $request = $this->createSubscriptionRequest($subscriptionId);
 
-        return $this->requester->send($request);
+        return $this->requester->send($request, '', '', '');
     }
 
     public function updateSubscription($subscriptionId)
@@ -147,6 +147,7 @@ class Cybersource {
     public function createSubscriptionRequest($subscriptionId)
     {
         $request = new CybersourceSOAPModel(
+            'PHP', phpversion(),
             $this->app->environment(),
             $this->app->make('config')->get('laravel-cybersource::merchant_id')
         );
@@ -165,7 +166,6 @@ class Cybersource {
     }
 
     // Reports
-
     public function getSubscriptions($date)
     {
         return $this->sendReportRequest('SubscriptionDetailReport', $date);

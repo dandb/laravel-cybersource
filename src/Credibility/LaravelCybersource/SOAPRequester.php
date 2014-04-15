@@ -61,7 +61,7 @@ class SOAPRequester {
 
         $this->soapClient->addWSSEToken();
 
-        return $request;
+        return $request->toXML();
     }
 
     public function convertToModel($xmlResponse)

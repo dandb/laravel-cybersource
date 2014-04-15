@@ -24,14 +24,27 @@ class CybersourceSOAPModelTest extends TestCase {
 
     public function testCreateNestedSOAPModel()
     {
-        $model = new CybersourceSOAPModel($this->environment, $this->merchantId);
+        $model = new CybersourceSOAPModel('PHP', phpversion(), $this->environment, $this->merchantId);
         $nested = new CybersourceSOAPModel();
 
         $model->nested = $nested;
 
         $this->assertEquals($nested, $model->nested);
-        $this->assertNull($nested->clientEnvironment);
-        $this->assertNull($nested->merchantID);
+        $this->assertFalse($nested->clientEnvironment);
+        $this->assertFalse($nested->merchantID);
+    }
+
+    public function testToXMLCreatesWellFormedXML()
+    {
+        $model = new CybersourceSOAPModel('PHP', phpversion(), $this->environment, $this->merchantId);
+        $nested = new CybersourceSOAPModel();
+
+        $nested->testValue = 'test';
+        $model->nested = $nested;
+
+        $xml = $model->toXML();
+
+        $this->assertStringStartsWith('<?xml', $xml);
     }
 
 

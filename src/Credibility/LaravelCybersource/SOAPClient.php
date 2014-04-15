@@ -1,12 +1,13 @@
 <?php namespace Credibility\LaravelCybersource;
 
+use BeSimple\SoapClient\SoapClient as BeSimpleSoapClient;
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
-class SOAPClient extends \BeSimple\SoapClient\SoapClient {
+class SOAPClient extends BeSimpleSoapClient {
 
     /**
      * @var Illuminate\Foundation\Application
@@ -34,9 +35,9 @@ class SOAPClient extends \BeSimple\SoapClient\SoapClient {
     {
         static::$app = $app;
 
-        $this->wsdl = static::$app->make('config')->get('laravel-cybersource::config.wsdl_endpoint');
-        $this->merchantId = static::$app->make('config')->get('laravel-cybersource::config.merchant_id');
-        $this->transactionId = static::$app->make('config')->get('laravel-cybersource::config.transaction_id');
+        $this->wsdl = static::$app->make('config')->get('laravel-cybersource::wsdl_endpoint');
+        $this->merchantId = static::$app->make('config')->get('laravel-cybersource::merchant_id');
+        $this->transactionId = static::$app->make('config')->get('laravel-cybersource::transaction_id');
 
         if(is_null($options)) {
             parent::__construct($this->wsdl);
@@ -74,8 +75,9 @@ class SOAPClient extends \BeSimple\SoapClient\SoapClient {
      */
     public static function getInstance($options = null)
     {
-        return new SOAPClient($options, static::$app);
+        return new SOAPClient(static::$app, $options);
     }
+
 
     /**
      * Runs the request

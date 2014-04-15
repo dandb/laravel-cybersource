@@ -11,7 +11,7 @@ class SOAPClientTest extends TestCase {
     public function setUp()
     {
         parent::setUp();
-        $this->client = new SOAPClient(null, $this->mockApp);
+        $this->client = new SOAPClient($this->mockApp, null);
     }
 
     public function testConstruct()
@@ -53,8 +53,6 @@ class SOAPClientTest extends TestCase {
         $this->assertInstanceOf('SoapHeader', $headers);
         $this->assertEquals(SOAPClient::WSSE_NAMESPACE, $headers->namespace);
         $this->assertEquals('Security', $headers->name);
-
-        var_dump($headers->data);
     }
 
 } 
