@@ -7,6 +7,9 @@ use \Mockery as m;
 
 class SOAPRequesterTest extends TestCase {
 
+    /**
+     * @var SOAPRequester
+     */
     private $soapRequester;
     private $mockClient;
 
@@ -17,20 +20,36 @@ class SOAPRequesterTest extends TestCase {
         $this->soapRequester = new SOAPRequester($this->mockClient, $this->mockApp);
     }
 
-    public function testConvertToXMLRequestNotNull()
+    public function testConvertToModelCreatesCybersourceSOAPModel()
     {
-        $model = new CybersourceSOAPModel($this->environment, $this->merchantId);
-        $model->test = 'test';
+        $obj = new \stdClass();
+        $obj->requestID = '12345';
+        $obj->decision = 'REJECT';
 
-        $newRequest = $this->soapRequester->convertToXMLRequest($model);
+        $testModel = new CybersourceSOAPModel();
+        $model = $this->soapRequester->convertToModel($testModel, $obj);
 
-        $this->assertNotNull($newRequest);
+        $this->assertEquals('12345', $model->requestID);
+        $this->assertEquals('REJECT', $model->decision);
     }
 
-    public function testHeadersCreatedProperly()
+    public function testNestedConvertToModelCreatesCybersourceSOAPModel()
     {
+        $obj = new \stdClass();
+        $obj->requestID = '12345';
+        $obj->decision = 'REJECT';
+
+        $newObj = new \stdClass();
+        $newObj->testReason = 101;
+
+        $obj->reasonCode = $newObj;
+
+        $testModel = new CybersourceSOAPModel();
+        $model = $this->soapRequester->convertToModel($testModel, $obj);
+
+        $this->assertEquals('12345', $model->requestID);
+        $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceSOAPModel', $model->reasonCode);
 
     }
-
 
 } 

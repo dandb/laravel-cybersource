@@ -5,8 +5,6 @@ use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
 
 class CybersourceSOAPModelTest extends TestCase {
 
-
-
     public function testGetWorks()
     {
         $model = new CybersourceSOAPModel();
@@ -15,11 +13,11 @@ class CybersourceSOAPModelTest extends TestCase {
         $this->assertEquals('test', $model->test);
     }
 
-    public function testEmptyGetIsFalse()
+    public function testEmptyGetIsNull()
     {
         $model = new CybersourceSOAPModel();
 
-        $this->assertFalse($model->notExists);
+        $this->assertNull($model->notExists);
     }
 
     public function testCreateNestedSOAPModel()
@@ -30,34 +28,36 @@ class CybersourceSOAPModelTest extends TestCase {
         $model->nested = $nested;
 
         $this->assertEquals($nested, $model->nested);
-        $this->assertFalse($nested->clientEnvironment);
-        $this->assertFalse($nested->merchantID);
+        $this->assertNull($nested->clientEnvironment);
+        $this->assertNull($nested->merchantID);
     }
 
-    public function testToXMLCreatesWellFormedXML()
+    public function testToStdObjectCreatesValidObject()
+    {
+        $model = $this->getCybersourceSOAPModel();
+
+        $obj = $model->toStdObject();
+
+        $this->assertEquals($this->environment, $obj->clientEnvironment);
+        $this->assertEquals('PHP', $obj->clientLibrary);
+        $this->assertEquals(phpversion(), $obj->clientLibraryVersion);
+        $this->assertEquals($this->merchantId, $obj->merchantID);
+    }
+
+    public function testToStdObjectWithNestedObjectsWorks()
     {
         $model = $this->getCybersourceSOAPModel();
         $nested = new CybersourceSOAPModel();
 
-        $nested->testValue = 'test';
-        $model->nested = $nested;
+        $nested->run = 'true';
 
-        $xml = $model->toXML();
+        $model->paySubscriptionRetrieveService = $nested;
 
-        $this->assertStringStartsWith('<requestMessage', $xml);
-    }
+        $obj = $model->toStdObject();
 
-    public function ToXMLWithRunnableCreatesCorrectly()
-    {
-        $model = $this->getCybersourceSOAPModel();
-        $paySubscriptionRetrieveService = new CybersourceSOAPModel();
-        $paySubscriptionRetrieveService->run = true;
-
-        $model->paySubscriptionRetrieveService = $paySubscriptionRetrieveService;
-
-        $xml = $model->toXML();
-
-        var_dump($xml);
+        $this->assertNotNull($obj->paySubscriptionRetrieveService);
+        $this->assertInstanceOf('stdClass', $obj->paySubscriptionRetrieveService);
+        $this->assertEquals('true', $obj->paySubscriptionRetrieveService->run);
     }
 
     private function getCybersourceSOAPModel()

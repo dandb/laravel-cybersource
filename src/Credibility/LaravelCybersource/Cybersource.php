@@ -1,6 +1,7 @@
 <?php namespace Credibility\LaravelCybersource;
 
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
+use Credibility\LaravelCybersource\models\CybersourceResponse;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\App;
@@ -11,12 +12,13 @@ class Cybersource {
      * @var Illuminate\Foundation\Application
      */
     public $app;
-
+    /**
+     * @var SOAPRequester
+     */
     private $requester;
-
     public $timeout = 10;
 
-    public $avs_codes = array(
+    public $avsCodes = array(
         'A' => 'Partial match: Street address matches, but 5-digit and 9-digit postal codes do not match.',
         'B' => 'Partial match: Street address matches, but postal code is not verified.',
         'C' => 'No match: Street address and postal code do not match.',
@@ -45,7 +47,7 @@ class Cybersource {
         '2' => 'Unrecognized: The processor returned an unrecognized value for the AVS response.',
     );
 
-    public $cvn_codes = array(
+    public $cvnCodes = array(
         'D' => 'The transaction was determined to be suspicious by the issuing bank.',
         'I' => 'The CVN failed the processor\'s data validation check.',
         'M' => 'The CVN matched.',
@@ -59,47 +61,7 @@ class Cybersource {
         '3' => 'No result code was returned by the processor.',
     );
 
-    public $result_codes = array(
-        '100' => 'Successful transaction.',
-        '101' => 'The request is missing one or more required fields.',
-        '102' => 'One or more fields in the request contains invalid data.',
-        '110' => 'Only a partial amount was approved.',
-        '150' => 'Error: General system failure.',
-        '151' => 'Error: The request was received but there was a server timeout.',
-        '152' => 'Error: The request was received, but a service did not finish running in time.',
-        '200' => 'The authorization request was approved by the issuing bank but declined by CyberSource because it did not pass the Address Verification Service (AVS) check.',
-        '201' => 'The issuing bank has questions about the request.',
-        '202' => 'Expired card.',
-        '203' => 'General decline of the card.',
-        '204' => 'Insufficient funds in the account.',
-        '205' => 'Stolen or lost card.',
-        '207' => 'Issuing bank unavailable.',
-        '208' => 'Inactive card or card not authorized for card-not-present transactions.',
-        '209' => 'American Express Card Identification Digits (CID) did not match.',
-        '210' => 'The card has reached the credit limit.',
-        '211' => 'Invalid CVN.',
-        '221' => 'The customer matched an entry on the processor\'s negative file.',
-        '230' => 'The authorization request was approved by the issuing bank but declined by CyberSource because it did not pass the CVN check.',
-        '231' => 'Invalid credit card number.',
-        '232' => 'The card type is not accepted by the payment processor.',
-        '233' => 'General decline by the processor.',
-        '234' => 'There is a problem with your CyberSource merchant configuration.',
-        '235' => 'The requested amount exceeds the originally authorized amount.',
-        '236' => 'Processor failure.',
-        '237' => 'The authorization has already been reversed.',
-        '238' => 'The authorization has already been captured.',
-        '239' => 'The requested transaction amount must match the previous transaction amount.',
-        '240' => 'The card type sent is invalid or does not correlate with the credit card number.',
-        '241' => 'The request ID is invalid.',
-        '242' => 'You requested a capture, but there is no corresponding, unused authorization record.',
-        '243' => 'The transaction has already been settled or reversed.',
-        '246' => 'The capture or credit is not voidable because the capture or credit information has laready been submitted to your processor. Or, you requested a void for a type of transaction that cannot be voided.',
-        '247' => 'You requested a credit for a capture that was previously voided.',
-        '250' => 'Error: The request was received, but there was a timeout at the payment processor.',
-        '520' => 'The authorization request was approved by the issuing bank but declined by CyberSource based on your Smart Authorization settings.',
-    );
-
-    public $card_types = array(
+    public $cardTypes = array(
         'Visa' => '001',
         'MasterCard' => '002',
         'American Express' => '003',
@@ -123,11 +85,17 @@ class Cybersource {
         $this->app = $app;
     }
 
+    /**
+     * @param $subscriptionId
+     * @return CybersourceResponse
+     */
     public function getSubscriptionStatus($subscriptionId)
     {
         $request = $this->createSubscriptionRequest($subscriptionId);
+        $rawResponse = $this->requester->send($request);
+        $response = $this->convertToResponse($rawResponse);
 
-        return $this->requester->send($request, '');
+        return $response;
     }
 
     public function updateSubscription($subscriptionId)
@@ -145,13 +113,14 @@ class Cybersource {
         $request = new CybersourceSOAPModel(
             'PHP', phpversion(),
             $this->app->environment(),
-            $this->app->make('config')->get('laravel-cybersource::merchant_id')
+            $this->app->make('config')->get('laravel-cybersource::merchant_id'),
+            'MRC-123'
         );
 
         $subscriptionRetrieveRequest = new CybersourceSOAPModel();
+        $subscriptionRetrieveRequest->run = 'true';
 
         $request->paySubscriptionRetrieveService = $subscriptionRetrieveRequest;
-        $subscriptionRetrieveRequest->run = 'true';
 
         $subscriptionInfo = new CybersourceSOAPModel();
         $subscriptionInfo->subscriptionID = $subscriptionId;
@@ -160,6 +129,40 @@ class Cybersource {
 
         return $request;
     }
+
+    private function convertToResponse(CybersourceSOAPModel $response)
+    {
+        $response = array();
+        if($response->decision == 'ACCEPT') {
+
+        } else {
+
+        }
+
+        $responseObj = new CybersourceResponse($response);
+
+        /*
+         * if(!$this->isValid()) {
+            $message = 'Fatal Error - No Response code returned from Cybersource';
+            if(array_key_exists($model->reasonCode, $this->resultCodes)) {
+                $message = $this->resultCodes[$model->reasonCode];
+            }
+            $this->response = array(
+                'code' => $model->reasonCode,
+                'message' => $message,
+                'metadata' => array(
+                    'requestID' => $model->requestID,
+                    'requestToken' => $model->requestToken
+                )
+            );
+        } else {
+
+        }
+         */
+
+        return $responseObj;
+    }
+
 
     // Reports
     public function getSubscriptions($date)
@@ -246,5 +249,6 @@ class Cybersource {
         return $records;
 
     }
+
 
 } 

@@ -26,16 +26,16 @@ class SOAPRequester {
         $this->timeout = $this->app->make('config')->get('laravel-cybersource::timeout');
     }
 
-    public function send(CybersourceSOAPModel $request, $location)
+    public function send(CybersourceSOAPModel $request)
     {
-        $xmlRequest = $this->convertToXMLRequest($request);
-        $xmlResponse = $this->soapClient->runTransaction($xmlRequest);
-//        $xmlResponse = $this->soapClient->doRequest($xmlRequest, $location);
+        $requestObj = $this->convertToStdClass($request);
+        $responseObj = $this->soapClient->runTransaction($requestObj);
 
-        return $this->convertToModel($xmlResponse);
+        var_dump($responseObj);exit;
+        return $this->convertToModel(new CybersourceSOAPModel(), $responseObj);
     }
 
-    public function convertToXMLRequest(CybersourceSOAPModel $request)
+    public function convertToStdClass(CybersourceSOAPModel $request)
     {
         $contextOpts = array(
             'http' => array(
@@ -62,12 +62,23 @@ class SOAPRequester {
 
         $this->soapClient->addWSSEToken();
 
-        return $request->toXML();
+        return $request->toStdObject();
     }
 
-    public function convertToModel($xmlResponse)
+    public function convertToModel(&$model, $responseObj)
     {
-        var_dump($xmlResponse);exit;
+        foreach($responseObj as $key => $value) {
+            if($value instanceof \stdClass) {
+                $newModel = new CybersourceSOAPModel();
+                $this->convertToModel($newModel, $value);
+                $model->$key = $newModel;
+            } else {
+                if(!is_null($value)) {
+                    $model->$key = $value;
+                }
+            }
+        }
+        return $model;
     }
 
 }

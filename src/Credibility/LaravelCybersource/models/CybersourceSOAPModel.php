@@ -2,20 +2,19 @@
 
 class CybersourceSOAPModel {
 
+    /**
+     * @var array
+     */
     private $data;
 
-    private $runnable = array(
-        'paySubscriptionUpdateService',
-        'paySubscriptionRetrieveService',
-        'paySubscriptionDeleteService',
-    );
-
-    public function __construct($clientLibrary = null, $clientLibVersion = null, $clientEnv = null, $merchantId = null)
+    public function __construct($clientLibrary = null, $clientLibVersion = null,
+                                $clientEnv = null, $merchantId = null, $merchantReferenceCode = null)
     {
         $this->clientLibrary = $clientLibrary;
         $this->clientLibraryVersion = $clientLibVersion;
         $this->clientEnvironment = $clientEnv;
         $this->merchantID = $merchantId;
+        $this->merchantReferenceCode = $merchantReferenceCode;
     }
 
     public function __set($name, $value)
@@ -23,43 +22,36 @@ class CybersourceSOAPModel {
         $this->data[$name] = $value;
     }
 
-    public function __call($name, $args)
-    {
-    }
-
     public function __get($name)
     {
         if(isset($this->data[$name])) {
             return $this->data[$name];
         }
-        return false;
+        return null;
     }
 
-    public function toXML()
+    public function getData()
     {
-        $xml = '<requestMessage xmlns="urn:schemas-cybersource-com:transaction-data-1.92">';
-        $this->createNestedXML($xml, $this);
-        $xml .= '</requestMessage>';
-
-        return $xml;
+        return $this->data;
     }
 
-    private function createNestedXML(&$xml, $value)
+    public function toStdObject()
     {
-        if($value instanceof CybersourceSOAPModel) {
-            foreach($value->data as $key => $subValue) {
-                if(in_array($key, $this->runnable)) {
-                    $xml .= '<' . $key . ' run="true"/>';
-                } else {
-                    if($subValue instanceof CybersourceSOAPModel) {
-                        $xml .= '<' . $key . '>';
-                        $this->createNestedXML($xml, $subValue);
-                        $xml .= '</' . $key . '>';
-                    } else if(!is_null($subValue)) {
-                        $xml .= '<' . $key . '>';
-                        $xml .= $subValue;
-                        $xml .= '</' . $key . '>';
-                    }
+        $root = new \stdClass();
+        $this->createNestedStdObject($root, $this->data);
+        return $root;
+    }
+
+    private function createNestedStdObject(&$root, $data)
+    {
+        foreach($data as $key => $value) {
+            if($value instanceof CybersourceSOAPModel) {
+                $obj = new \stdClass();
+                $this->createNestedStdObject($obj, $value->data);
+                $root->$key = $obj;
+            } else {
+                if(!is_null($value)) {
+                    $root->$key = $value;
                 }
             }
         }
