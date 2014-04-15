@@ -1,6 +1,7 @@
 <?php namespace Credibility\LaravelCybersource\models;
 
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
+use Credibility\LaravelCybersource\Exceptions\CybersourceInvalidResponseCodeException;
 use Credibility\LaravelCybersource\Exceptions\CybersourceMissingDecisionException;
 use Credibility\LaravelCybersource\Exceptions\CybersourceMissingResponseCodeException;
 
@@ -52,14 +53,19 @@ class CybersourceResponse {
         '520' => 'The authorization request was approved by the issuing bank but declined by CyberSource based on your Smart Authorization settings.',
     );
 
-    public function __construct($response = array())
+    public function __construct(CybersourceSOAPModel $obj)
     {
+        $response = $obj->toArray();
         if(!isset($response['reasonCode'])) {
-            throw new CybersourceMissingResponseCodeException('Response Code Not Provided');
+            throw new CybersourceException('Response Code Not Provided');
         }
         if(!isset($response['decision'])) {
-            throw new CybersourceMissingDecisionException('Response Code Not Provided');
+            throw new CybersourceException('Decision Not Provided');
         }
+        if(!isset($this->resultCodes[$response['reasonCode']])) {
+            throw new CybersourceException('Invalid Response Code Provided');
+        }
+        $this->valid = $response['decision'] == 'ACCEPT' ? true : false;
         $this->response = $response;
         $this->response['message'] = $this->resultCodes[$response['reasonCode']];
     }

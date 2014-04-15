@@ -30,7 +30,6 @@ class SOAPRequester {
     {
         $requestObj = $this->convertToStdClass($request);
         $responseObj = $this->soapClient->runTransaction($requestObj);
-
         return $this->convertToModel(new CybersourceSOAPModel(), $responseObj);
     }
 

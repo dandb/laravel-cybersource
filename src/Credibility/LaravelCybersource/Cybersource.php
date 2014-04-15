@@ -91,16 +91,46 @@ class Cybersource {
      */
     public function getSubscriptionStatus($subscriptionId)
     {
-        $request = $this->createSubscriptionRequest($subscriptionId);
+        $request = $this->createSubscriptionStatusRequest($subscriptionId);
         $rawResponse = $this->requester->send($request);
-        $response = $this->convertToResponse($rawResponse);
-
-        return $response->getDetails();
+        return new CybersourceResponse($rawResponse);
     }
 
-    public function updateSubscription($subscriptionId)
+    public function createSubscription($paymentToken)
     {
+        $request = $this->createNewSubscription($paymentToken);
+        $rawResponse = $this->requester->send($request);
+        return new CybersourceResponse($rawResponse);
+    }
 
+    public function createNewSubscription($paymentToken)
+    {
+        $request = $this->createNewRequest();
+
+        $paySubscriptionCreateService = new CybersourceSOAPModel();
+        $paySubscriptionCreateService->run = 'true';
+        $paySubscriptionCreateService->paymentRequestID = $paymentToken;
+
+        $subscription = new CybersourceSOAPModel();
+        $subscription->title = 'Test';
+        $subscription->paymentMethod = 'credit card';
+
+        $recurringSubscriptionInfo = new CybersourceSOAPModel();
+        $recurringSubscriptionInfo->frequency = 'weekly';
+        $recurringSubscriptionInfo->amount = 100.00;
+        $recurringSubscriptionInfo->automaticRenew = 'true';
+        $recurringSubscriptionInfo->startDate = '20140315';
+
+        $request->paySubscriptionCreateService = $paySubscriptionCreateService;
+        $request->recurringSubscriptionInfo = $recurringSubscriptionInfo;
+        $request->subscription = $subscription;
+
+        return $request;
+    }
+
+    public function updateSubscription($subscriptionId, $paymentToken)
+    {
+        $request = $this->createUpdateSubscriptionRequest($subscriptionId, $paymentToken);
     }
 
     public function cancelSubscription($subscriptionId)
@@ -108,7 +138,7 @@ class Cybersource {
 
     }
 
-    public function createSubscriptionRequest($subscriptionId)
+    public function createSubscriptionStatusRequest($subscriptionId)
     {
         $request = $this->createNewRequest();
 
@@ -125,12 +155,21 @@ class Cybersource {
         return $request;
     }
 
-    public function convertToResponse(CybersourceSOAPModel $response)
+    public function createUpdateSubscriptionRequest($subscriptionId)
     {
-        $responseArr = $response->toArray();
-        $responseObj = new CybersourceResponse($responseArr);
+        $request = $this->createNewRequest();
 
-        return $responseObj;
+        $subscriptionRetrieveRequest = new CybersourceSOAPModel();
+        $subscriptionRetrieveRequest->run = 'true';
+
+        $request->paySubscriptionRetrieveService = $subscriptionRetrieveRequest;
+
+        $subscriptionInfo = new CybersourceSOAPModel();
+        $subscriptionInfo->subscriptionID = $subscriptionId;
+
+        $request->recurringSubscriptionInfo = $subscriptionInfo;
+
+        return $request;
     }
 
     public function createNewRequest()

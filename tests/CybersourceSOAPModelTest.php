@@ -73,7 +73,6 @@ class CybersourceSOAPModelTest extends TestCase {
         $this->assertArrayHasKey('clientLibraryVersion', $array);
         $this->assertArrayHasKey('clientEnvironment', $array);
         $this->assertArrayHasKey('merchantID', $array);
-        $this->assertArrayHasKey('merchantReferenceCode', $array);
     }
 
     private function getCybersourceSOAPModel()

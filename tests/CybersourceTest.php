@@ -1,12 +1,16 @@
 <?php
 
 use Credibility\LaravelCybersource\Cybersource;
+use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
 use LaravelCybersource\TestCase;
 use \Mockery as m;
 
 class CybersourceTest extends TestCase {
 
     private $mockRequester;
+    /**
+     * @var Cybersource
+     */
     private $cybersource;
 
     public function setUp()
@@ -17,9 +21,17 @@ class CybersourceTest extends TestCase {
         $this->cybersource->app = $this->mockApp;
     }
 
+    public function testCreateNewRequest()
+    {
+        $model = $this->cybersource->createNewRequest();
+
+        $this->assertNotNull($model);
+        $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceSOAPModel', $model);
+    }
+
     public function testCreateSubscriptionRequest()
     {
-        $request = $this->cybersource->createSubscriptionRequest('123');
+        $request = $this->cybersource->createSubscriptionStatusRequest('123');
 
         $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceSOAPModel', $request);
         $this->assertNotNull($request->clientEnvironment);
@@ -29,11 +41,18 @@ class CybersourceTest extends TestCase {
         $this->assertEquals('123', $request->recurringSubscriptionInfo->subscriptionID);
     }
 
-    public function testConvertingFromModelToResponseWorks()
+    public function testGetSubscriptionStatusReturnsCybersourceResponse()
     {
+        $model = new CybersourceSOAPModel();
+        $model->reasonCode = 100;
+        $model->decision = 'ACCEPT';
+        $this->mockRequester->shouldReceive('send')->andReturn($model);
 
+        $response = $this->cybersource->getSubscriptionStatus('123');
+
+        $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceResponse', $response);
+        $this->assertTrue($response->isValid());
     }
-
 
 
 
