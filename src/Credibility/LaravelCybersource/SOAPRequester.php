@@ -26,10 +26,11 @@ class SOAPRequester {
         $this->timeout = $this->app->make('config')->get('laravel-cybersource::timeout');
     }
 
-    public function send(CybersourceSOAPModel $request, $location, $action, $version)
+    public function send(CybersourceSOAPModel $request, $location)
     {
         $xmlRequest = $this->convertToXMLRequest($request);
-        $xmlResponse = $this->soapClient->doRequest($xmlRequest, $location, $action, $version);
+        $xmlResponse = $this->soapClient->runTransaction($xmlRequest);
+//        $xmlResponse = $this->soapClient->doRequest($xmlRequest, $location);
 
         return $this->convertToModel($xmlResponse);
     }

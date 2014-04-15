@@ -80,16 +80,13 @@ class SOAPClient extends BeSimpleSoapClient {
 
 
     /**
-     * Runs the request
      * @param $request
      * @param $location
-     * @param $action
-     * @param $version
      * @param null $one_way
      * @return string
      * @throws Exceptions\CybersourceException
      */
-    public function doRequest($request, $location, $action, $version, $one_way = null)
+    public function doRequest($request, $location, $one_way = null)
     {
         $header = self::SOAP_HEADER_PRE_USER . $this->merchantId .
             self::SOAP_HEADER_PRE_PASS . $this->transactionId .
@@ -100,7 +97,7 @@ class SOAPClient extends BeSimpleSoapClient {
 
         try {
             $requestDOM->loadXML($request);
-            $soapHeaderDOM->loadXML($soapHeaderDOM);
+            $soapHeaderDOM->loadXML($header);
 
             $node = $requestDOM->importNode($soapHeaderDOM->firstChild, true);
 
@@ -109,10 +106,10 @@ class SOAPClient extends BeSimpleSoapClient {
             $request = $requestDOM->saveXML();
         } catch (\DOMException $e) {
             \Log::error($e);
-            throw new CybersourceException();
+            throw new CybersourceException($e->getMessage());
         }
 
-        return parent::__doRequest($request, $location, $action, $version, $one_way);
+        return parent::__doRequest($request, $location, 'runTransaction', SOAP_1_1, $one_way);
     }
 
 

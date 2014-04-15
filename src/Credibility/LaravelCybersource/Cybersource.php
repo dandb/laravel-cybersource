@@ -127,7 +127,7 @@ class Cybersource {
     {
         $request = $this->createSubscriptionRequest($subscriptionId);
 
-        return $this->requester->send($request, '', '', '');
+        return $this->requester->send($request, '');
     }
 
     public function updateSubscription($subscriptionId)

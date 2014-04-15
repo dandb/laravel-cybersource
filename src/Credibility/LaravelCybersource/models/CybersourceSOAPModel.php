@@ -38,28 +38,31 @@ class CybersourceSOAPModel {
     public function toXML()
     {
         $xml = '<requestMessage xmlns="urn:schemas-cybersource-com:transaction-data-1.92">';
-        $xml = $this->createNestedXML($xml, $this);
+        $this->createNestedXML($xml, $this);
         $xml .= '</requestMessage>';
 
         return $xml;
     }
 
-    private function createNestedXML($xml, $value)
+    private function createNestedXML(&$xml, $value)
     {
         if($value instanceof CybersourceSOAPModel) {
             foreach($value->data as $key => $subValue) {
-                if($subValue instanceof CybersourceSOAPModel) {
-                    $xml .= '<' . $key . '>';
-                    $this->createNestedXML($xml, $subValue);
-                    $xml .= '</' . $key . '>';
-                } else if(!is_null($subValue)) {
-                    $xml .= '<' . $key . '>';
-                    $xml .= $subValue;
-                    $xml .= '</' . $key . '>';
+                if(in_array($key, $this->runnable)) {
+                    $xml .= '<' . $key . ' run="true"/>';
+                } else {
+                    if($subValue instanceof CybersourceSOAPModel) {
+                        $xml .= '<' . $key . '>';
+                        $this->createNestedXML($xml, $subValue);
+                        $xml .= '</' . $key . '>';
+                    } else if(!is_null($subValue)) {
+                        $xml .= '<' . $key . '>';
+                        $xml .= $subValue;
+                        $xml .= '</' . $key . '>';
+                    }
                 }
             }
         }
-        return $xml;
     }
 
 } 
