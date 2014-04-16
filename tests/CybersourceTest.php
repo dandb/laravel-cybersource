@@ -29,7 +29,7 @@ class CybersourceTest extends TestCase {
         $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceSOAPModel', $model);
     }
 
-    public function testCreateSubscriptionRequest()
+    public function testCreateSubscriptionStatusRequest()
     {
         $request = $this->cybersource->createSubscriptionStatusRequest('123');
 
@@ -92,8 +92,9 @@ class CybersourceTest extends TestCase {
 
         $request = $this->cybersource->createCancelSubscriptionRequest($subId);
 
-        $this->assertEquals('true', $request->paySubscriptionDeleteService->run);
+        $this->assertEquals('true', $request->paySubscriptionUpdateService->run);
         $this->assertEquals($subId, $request->recurringSubscriptionInfo->subscriptionID);
+        $this->assertEquals('cancel', $request->recurringSubscriptionInfo->status);
     }
 
 }

@@ -133,13 +133,44 @@ class Cybersource {
         return $this->sendRequest($request);
     }
 
+    /**
+     * @param $subscriptionId
+     * @param $eventNumber
+     * @param $eventAmount
+     * @return CybersourceResponse
+     */
+    public function updateSubscriptionEvent($subscriptionId, $eventNumber, $eventAmount, $action)
+    {
+        $request = $this->createUpdateSubscriptionEventRequest($subscriptionId, $eventNumber, $eventAmount, $action);
+        return $this->sendRequest($request);
+    }
+
+    public function createUpdateSubscriptionEventRequest($subscriptionId, $eventNumber, $eventAmount, $action)
+    {
+        $request = $this->createNewRequest();
+
+        $paySubscriptionEventUpdateService = new CybersourceSOAPModel();
+        $paySubscriptionEventUpdateService->run = 'true';
+
+        $recurringSubscriptionInfo = new CybersourceSOAPModel();
+        $event = new CybersourceSOAPModel();
+
+        $event->number = $eventNumber;
+        $event->amount = $eventAmount;
+
+        $recurringSubscriptionInfo->subscriptionID = $subscriptionId;
+        $recurringSubscriptionInfo->event = $event;
+
+        $request->paySubscriptionEventUpdateService = $paySubscriptionEventUpdateService;
+        $request->recurringSubscriptionInfo = $recurringSubscriptionInfo;
+
+        return $request;
+    }
+
     public function createNewSubscriptionRequest($paymentToken, $productTitle, $amount,
                                                  $frequency = 'weekly', $autoRenew = true, $startDate = null)
     {
-        if(empty($startDate)) {
-            date_default_timezone_set($this->app->make('config')->get('app.timezone'));
-            $startDate = date('Ymd');
-        }
+        $startDate = empty($startDate) ? $this->getTodaysDate() : $startDate;
         $request = $this->createNewRequest();
 
         $paySubscriptionCreateService = new CybersourceSOAPModel();
@@ -207,12 +238,15 @@ class Cybersource {
 
         $subscriptionInfo = new CybersourceSOAPModel();
         $subscriptionInfo->subscriptionID = $subscriptionId;
+        $subscriptionInfo->status = 'cancel';
 
-        $request->paySubscriptionDeleteService = $cancel;
+        $request->paySubscriptionUpdateService = $cancel;
         $request->recurringSubscriptionInfo = $subscriptionInfo;
 
         return $request;
     }
+
+
 
     public function createNewRequest()
     {
@@ -316,5 +350,10 @@ class Cybersource {
 
     }
 
+    private function getTodaysDate()
+    {
+        date_default_timezone_set($this->app->make('config')->get('app.timezone'));
+        return date('Ymd');
+    }
 
 } 
