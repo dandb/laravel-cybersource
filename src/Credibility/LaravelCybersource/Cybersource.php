@@ -224,8 +224,8 @@ class Cybersource {
     {
         $merchant_id = $this->app->make('config')->get('laravel-cybersource::merchant_id');
         $endpoint = $this->app->make('config')->get('laravel-cybersource::reports.endpoint');
-        $username = $this->app->make('config')->get('laravel-cybersource::username');
-        $password = $this->app->make('config')->get('laravel-cybersource::password');
+        $username = $this->app->make('config')->get('laravel-cybersource::reports.username');
+        $password = $this->app->make('config')->get('laravel-cybersource::reports.password');
 
         if ( !$date instanceof \DateTime ) {
             $date = new \DateTime($date);
@@ -242,8 +242,10 @@ class Cybersource {
             $merchant_id . '/' .
             $report_name . '.csv';
 
-        $result = @file_get_contents( $url );
+        var_dump($url); exit();
 
+        $result = @file_get_contents( $url );
+        var_dump($result); exit();
         if ( $result === false ) {
 
             // this would be a lot easier if we could just have an error handler that throws exceptions, but here it is...
