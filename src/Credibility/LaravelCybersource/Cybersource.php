@@ -95,6 +95,15 @@ class Cybersource {
         return $this->sendRequest($request);
     }
 
+    /**
+     * @param $paymentToken
+     * @param $productTitle
+     * @param $amount
+     * @param $frequency
+     * @param bool $autoRenew
+     * @param null $startDate
+     * @return CybersourceResponse
+     */
     public function createSubscription($paymentToken, $productTitle, $amount, $frequency, $autoRenew = true, $startDate = null)
     {
         $request = $this->createNewSubscriptionRequest($paymentToken, $productTitle,
@@ -114,9 +123,14 @@ class Cybersource {
         return $this->sendRequest($request);
     }
 
+    /**
+     * @param $subscriptionId
+     * @return CybersourceResponse
+     */
     public function cancelSubscription($subscriptionId)
     {
-
+        $request = $this->createCancelSubscriptionRequest($subscriptionId);
+        return $this->sendRequest($request);
     }
 
     public function createNewSubscriptionRequest($paymentToken, $productTitle, $amount,
@@ -166,18 +180,35 @@ class Cybersource {
         return $request;
     }
 
-    public function createUpdateSubscriptionRequest($subscriptionId)
+    public function createUpdateSubscriptionRequest($subscriptionId, $paymentToken)
     {
         $request = $this->createNewRequest();
 
-        $subscriptionRetrieveRequest = new CybersourceSOAPModel();
-        $subscriptionRetrieveRequest->run = 'true';
+        $subscriptionUpdateRequest = new CybersourceSOAPModel();
+        $subscriptionUpdateRequest->run = 'true';
+        $subscriptionUpdateRequest->paymentRequestID = $paymentToken;
 
-        $request->paySubscriptionRetrieveService = $subscriptionRetrieveRequest;
+        $request->paySubscriptionUpdateService = $subscriptionUpdateRequest;
 
         $subscriptionInfo = new CybersourceSOAPModel();
         $subscriptionInfo->subscriptionID = $subscriptionId;
 
+        $request->recurringSubscriptionInfo = $subscriptionInfo;
+
+        return $request;
+    }
+
+    public function createCancelSubscriptionRequest($subscriptionId)
+    {
+        $request = $this->createNewRequest();
+
+        $cancel = new CybersourceSOAPModel();
+        $cancel->run = 'true';
+
+        $subscriptionInfo = new CybersourceSOAPModel();
+        $subscriptionInfo->subscriptionID = $subscriptionId;
+
+        $request->paySubscriptionDeleteService = $cancel;
         $request->recurringSubscriptionInfo = $subscriptionInfo;
 
         return $request;
@@ -224,8 +255,8 @@ class Cybersource {
     {
         $merchant_id = $this->app->make('config')->get('laravel-cybersource::merchant_id');
         $endpoint = $this->app->make('config')->get('laravel-cybersource::reports.endpoint');
-        $username = $this->app->make('config')->get('laravel-cybersource::reports.username');
-        $password = $this->app->make('config')->get('laravel-cybersource::reports.password');
+        $username = $this->app->make('config')->get('laravel-cybersource::username');
+        $password = $this->app->make('config')->get('laravel-cybersource::password');
 
         if ( !$date instanceof \DateTime ) {
             $date = new \DateTime($date);
@@ -242,10 +273,8 @@ class Cybersource {
             $merchant_id . '/' .
             $report_name . '.csv';
 
-        var_dump($url); exit();
-
         $result = @file_get_contents( $url );
-        var_dump($result); exit();
+
         if ( $result === false ) {
 
             // this would be a lot easier if we could just have an error handler that throws exceptions, but here it is...

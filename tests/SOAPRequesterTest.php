@@ -49,7 +49,6 @@ class SOAPRequesterTest extends TestCase {
 
         $this->assertEquals('12345', $model->requestID);
         $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceSOAPModel', $model->reasonCode);
-
     }
 
-} 
+}

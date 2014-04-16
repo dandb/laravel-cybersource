@@ -74,7 +74,26 @@ class CybersourceTest extends TestCase {
         $this->assertEquals(date('Ymd'), $startDate);
     }
 
+    public function testCreateUpdateSubscriptionRequest()
+    {
+        $paymentToken = 'test123';
+        $subscriptionId = 'testingSubs';
 
+        $request = $this->cybersource->createUpdateSubscriptionRequest($subscriptionId, $paymentToken);
 
+        $this->assertEquals('true', $request->paySubscriptionUpdateService->run);
+        $this->assertEquals($paymentToken, $request->paySubscriptionUpdateService->paymentRequestID);
+        $this->assertEquals($subscriptionId, $request->recurringSubscriptionInfo->subscriptionID);
+    }
+
+    public function testCreateCancelSubscriptionRequest()
+    {
+        $subId = 'testing123';
+
+        $request = $this->cybersource->createCancelSubscriptionRequest($subId);
+
+        $this->assertEquals('true', $request->paySubscriptionDeleteService->run);
+        $this->assertEquals($subId, $request->recurringSubscriptionInfo->subscriptionID);
+    }
 
 }
