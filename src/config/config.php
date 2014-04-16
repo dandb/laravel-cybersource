@@ -11,9 +11,7 @@ return array(
      * The Endpoint to hit
      * Change between test and prod environments
      */
-    'wsdl_endpoint' => 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor',
-//    'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor/CyberSourceTransaction_1.26.wsdl'
-
+    'wsdl_endpoint' => '',
     'outbound_merchant_id' => '',
 
 
@@ -31,12 +29,13 @@ return array(
      * Both the merchant and transaction IDs
      */
     'merchant_id' => '',
+    'merchant_reference_code' => '',
     'transaction_id' => '',
 
     /**
      * Timeout for requests
      */
-    'timeout' => '',
+    'timeout' => '10',
 
     /**
      * Cybersource Username/Password info

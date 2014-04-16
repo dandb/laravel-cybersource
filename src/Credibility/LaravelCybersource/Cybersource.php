@@ -92,19 +92,40 @@ class Cybersource {
     public function getSubscriptionStatus($subscriptionId)
     {
         $request = $this->createSubscriptionStatusRequest($subscriptionId);
-        $rawResponse = $this->requester->send($request);
-        return new CybersourceResponse($rawResponse);
+        return $this->sendRequest($request);
     }
 
-    public function createSubscription($paymentToken)
+    public function createSubscription($paymentToken, $productTitle, $amount, $frequency, $autoRenew = true, $startDate = null)
     {
-        $request = $this->createNewSubscription($paymentToken);
-        $rawResponse = $this->requester->send($request);
-        return new CybersourceResponse($rawResponse);
+        $request = $this->createNewSubscriptionRequest($paymentToken, $productTitle,
+            $amount, $frequency, $autoRenew, $startDate
+        );
+        return $this->sendRequest($request);
     }
 
-    public function createNewSubscription($paymentToken)
+    /**
+     * @param $subscriptionId
+     * @param $paymentToken
+     * @return CybersourceResponse
+     */
+    public function updateSubscription($subscriptionId, $paymentToken)
     {
+        $request = $this->createUpdateSubscriptionRequest($subscriptionId, $paymentToken);
+        return $this->sendRequest($request);
+    }
+
+    public function cancelSubscription($subscriptionId)
+    {
+
+    }
+
+    public function createNewSubscriptionRequest($paymentToken, $productTitle, $amount,
+                                                 $frequency = 'weekly', $autoRenew = true, $startDate = null)
+    {
+        if(empty($startDate)) {
+            date_default_timezone_set($this->app->make('config')->get('app.timezone'));
+            $startDate = date('Ymd');
+        }
         $request = $this->createNewRequest();
 
         $paySubscriptionCreateService = new CybersourceSOAPModel();
@@ -112,30 +133,20 @@ class Cybersource {
         $paySubscriptionCreateService->paymentRequestID = $paymentToken;
 
         $subscription = new CybersourceSOAPModel();
-        $subscription->title = 'Test';
+        $subscription->title = $productTitle;
         $subscription->paymentMethod = 'credit card';
 
         $recurringSubscriptionInfo = new CybersourceSOAPModel();
-        $recurringSubscriptionInfo->frequency = 'weekly';
-        $recurringSubscriptionInfo->amount = 100.00;
-        $recurringSubscriptionInfo->automaticRenew = 'true';
-        $recurringSubscriptionInfo->startDate = '20140315';
+        $recurringSubscriptionInfo->frequency = $frequency;
+        $recurringSubscriptionInfo->amount = $amount;
+        $recurringSubscriptionInfo->automaticRenew = $autoRenew;
+        $recurringSubscriptionInfo->startDate = $startDate;
 
         $request->paySubscriptionCreateService = $paySubscriptionCreateService;
         $request->recurringSubscriptionInfo = $recurringSubscriptionInfo;
         $request->subscription = $subscription;
 
         return $request;
-    }
-
-    public function updateSubscription($subscriptionId, $paymentToken)
-    {
-        $request = $this->createUpdateSubscriptionRequest($subscriptionId, $paymentToken);
-    }
-
-    public function cancelSubscription($subscriptionId)
-    {
-
     }
 
     public function createSubscriptionStatusRequest($subscriptionId)
@@ -178,10 +189,15 @@ class Cybersource {
             'PHP', phpversion(),
             $this->app->environment(),
             $this->app->make('config')->get('laravel-cybersource::merchant_id'),
-            'MRC-123'
+            $this->app->make('config')->get('laravel-cybersource::merchant_reference_code')
         );
     }
 
+    public function sendRequest($request)
+    {
+        $rawResponse = $this->requester->send($request);
+        return new CybersourceResponse($rawResponse);
+    }
 
     // Reports
     public function getSubscriptions($date)
