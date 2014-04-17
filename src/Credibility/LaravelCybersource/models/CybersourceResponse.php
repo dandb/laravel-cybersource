@@ -1,9 +1,6 @@
 <?php namespace Credibility\LaravelCybersource\models;
 
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
-use Credibility\LaravelCybersource\Exceptions\CybersourceInvalidResponseCodeException;
-use Credibility\LaravelCybersource\Exceptions\CybersourceMissingDecisionException;
-use Credibility\LaravelCybersource\Exceptions\CybersourceMissingResponseCodeException;
 
 class CybersourceResponse {
 
@@ -83,11 +80,19 @@ class CybersourceResponse {
         return null;
     }
 
+    /**
+     * Checks whether the request was successful or failed
+     * @return bool
+     */
     public function isValid()
     {
         return $this->valid;
     }
 
+    /**
+     * Returns an array of response data
+     * @return array|mixed
+     */
     public function getDetails()
     {
         return $this->response;

@@ -87,7 +87,7 @@ class Cybersource {
 
     /**
      * @param $subscriptionId
-     * @return CybersourceResponse
+     * @return \Credibility\LaravelCybersource\models\CybersourceResponse
      */
     public function getSubscriptionStatus($subscriptionId)
     {
@@ -102,7 +102,7 @@ class Cybersource {
      * @param $frequency
      * @param bool $autoRenew
      * @param null $startDate
-     * @return CybersourceResponse
+     * @return \Credibility\LaravelCybersource\models\CybersourceResponse
      */
     public function createSubscription($paymentToken, $productTitle, $amount, $frequency, $autoRenew = true, $startDate = null)
     {
@@ -115,7 +115,7 @@ class Cybersource {
     /**
      * @param $subscriptionId
      * @param $paymentToken
-     * @return CybersourceResponse
+     * @return \Credibility\LaravelCybersource\models\CybersourceResponse
      */
     public function updateSubscription($subscriptionId, $paymentToken)
     {
@@ -125,7 +125,7 @@ class Cybersource {
 
     /**
      * @param $subscriptionId
-     * @return CybersourceResponse
+     * @return \Credibility\LaravelCybersource\models\CybersourceResponse
      */
     public function cancelSubscription($subscriptionId)
     {
@@ -134,41 +134,26 @@ class Cybersource {
     }
 
     /**
-     * @param $subscriptionId
-     * @param $eventNumber
-     * @param $eventAmount
-     * @return CybersourceResponse
+     * @param $amount
+     * @param $paymentToken
+     * @return \Credibility\LaravelCybersource\models\CybersourceResponse
      */
-    public function updateSubscriptionEvent($subscriptionId, $eventNumber, $eventAmount, $action)
+    public function chargeOnce($amount, $paymentToken)
     {
-        $request = $this->createUpdateSubscriptionEventRequest($subscriptionId, $eventNumber, $eventAmount, $action);
+        $request = $this->createOneTimeChargeRequest($amount, $paymentToken);
         return $this->sendRequest($request);
     }
 
-    public function createUpdateSubscriptionEventRequest($subscriptionId, $eventNumber, $eventAmount, $action)
+    public function createOneTimeChargeRequest($amount, $paymentToken)
     {
-        $request = $this->createNewRequest();
-
-        $paySubscriptionEventUpdateService = new CybersourceSOAPModel();
-        $paySubscriptionEventUpdateService->run = 'true';
-
-        $recurringSubscriptionInfo = new CybersourceSOAPModel();
-        $event = new CybersourceSOAPModel();
-
-        $event->number = $eventNumber;
-        $event->amount = $eventAmount;
-
-        $recurringSubscriptionInfo->subscriptionID = $subscriptionId;
-        $recurringSubscriptionInfo->event = $event;
-
-        $request->paySubscriptionEventUpdateService = $paySubscriptionEventUpdateService;
-        $request->recurringSubscriptionInfo = $recurringSubscriptionInfo;
-
+        $request = $this->createNewSubscriptionRequest(
+            $paymentToken, 'one-time-charge', $amount, 'on-demand', 'false');
         return $request;
     }
 
+
     public function createNewSubscriptionRequest($paymentToken, $productTitle, $amount,
-                                                 $frequency = 'weekly', $autoRenew = true, $startDate = null)
+                                                 $frequency = 'weekly', $autoRenew = 'true', $startDate = null)
     {
         $startDate = empty($startDate) ? $this->getTodaysDate() : $startDate;
         $request = $this->createNewRequest();

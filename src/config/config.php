@@ -11,9 +11,17 @@ return array(
      * The Endpoint to hit
      * Change between test and prod environments
      */
-    'wsdl_endpoint' => '',
+    'wsdl_endpoint' => 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor/CyberSourceTransaction_1.26.wsdl',
+
+    /**
+     * Probably not necessary - currently not being used
+     */
     'outbound_merchant_id' => '',
 
+    /**
+     * The currency format
+     */
+    'currency' => 'USD',
 
     /**
      * Reports Endpoints

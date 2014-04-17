@@ -70,7 +70,7 @@ class CybersourceTest extends TestCase {
         $this->assertEquals($productTitle, $request->subscription->title);
         $this->assertEquals($amount, $request->recurringSubscriptionInfo->amount);
         $this->assertEquals('weekly', $frequency);
-        $this->assertEquals(true, $autoRenew);
+        $this->assertEquals('true', $autoRenew);
         $this->assertEquals(date('Ymd'), $startDate);
     }
 
@@ -95,6 +95,25 @@ class CybersourceTest extends TestCase {
         $this->assertEquals('true', $request->paySubscriptionUpdateService->run);
         $this->assertEquals($subId, $request->recurringSubscriptionInfo->subscriptionID);
         $this->assertEquals('cancel', $request->recurringSubscriptionInfo->status);
+    }
+
+    public function testCreateOneTimeChargeRequest()
+    {
+        $amt = 100.00;
+        $pmtToken = 'test-token';
+
+        $request = $this->cybersource->createOneTimeChargeRequest($amt, $pmtToken);
+
+        $startDate = $request->recurringSubscriptionInfo->startDate;
+        $autoRenew = $request->recurringSubscriptionInfo->automaticRenew;
+        $frequency = $request->recurringSubscriptionInfo->frequency;
+
+        $this->assertEquals($pmtToken, $request->paySubscriptionCreateService->paymentRequestID);
+        $this->assertEquals('one-time-charge', $request->subscription->title);
+        $this->assertEquals($amt, $request->recurringSubscriptionInfo->amount);
+        $this->assertEquals('on-demand', $frequency);
+        $this->assertEquals('false', $autoRenew);
+        $this->assertEquals(date('Ymd'), $startDate);
     }
 
 }
