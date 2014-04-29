@@ -9,6 +9,7 @@ class CybersourceResponse {
      * @var array
      */
     private $response;
+    private $reasonCode;
 
     private $resultCodes = array(
         '100' => 'Successful transaction.',
@@ -62,18 +63,34 @@ class CybersourceResponse {
             $response = $response->toArray();
         }
 
-        if(!isset($response['reasonCode'])) {
+        $this->reasonCode = $this->getReasonCode($response);
+
+        if(is_null($this->reasonCode)) {
             throw new CybersourceException('Response Code Not Provided');
         }
+
         if(!isset($response['decision'])) {
             throw new CybersourceException('Decision Not Provided');
         }
-        if(!isset($this->resultCodes[$response['reasonCode']])) {
+
+        if(!isset($this->resultCodes[$this->reasonCode])) {
             throw new CybersourceException('Invalid Response Code Provided');
         }
         $this->valid = $response['decision'] == 'ACCEPT' ? true : false;
         $this->response = $response;
-        $this->response['message'] = $this->resultCodes[$response['reasonCode']];
+        $this->response['message'] = $this->resultCodes[$this->reasonCode];
+    }
+
+    private function getReasonCode($responseArray) {
+        $code = null;
+
+        if (isset($responseArray['reasonCode'])) {
+            $code = $responseArray['reasonCode'];
+        } elseif (isset($responseArray['reason_code'])) {
+            $code = $responseArray['reason_code'];
+        }
+
+        return $code;
     }
 
     public function __set($name, $value)
