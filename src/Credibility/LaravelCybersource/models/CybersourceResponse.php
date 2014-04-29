@@ -50,9 +50,18 @@ class CybersourceResponse {
         '520' => 'The authorization request was approved by the issuing bank but declined by CyberSource based on your Smart Authorization settings.',
     );
 
-    public function __construct(CybersourceSOAPModel $obj)
+    /************************************
+     * Response object constructor method
+     *
+     * @param $response Array|CybersourceSoapModel [required]
+     *
+     */
+    public function __construct($response)
     {
-        $response = $obj->toArray();
+        if ($response instanceof CybersourceSOAPModel) {
+            $response = $response->toArray();
+        }
+
         if(!isset($response['reasonCode'])) {
             throw new CybersourceException('Response Code Not Provided');
         }
@@ -87,6 +96,14 @@ class CybersourceResponse {
     public function isValid()
     {
         return $this->valid;
+    }
+
+    public function error() {
+        if ($this->isValid()) {
+            return false;
+        } else {
+            return !empty($this->response['message']) ? $this->response['message'] : false;
+        }
     }
 
     /**

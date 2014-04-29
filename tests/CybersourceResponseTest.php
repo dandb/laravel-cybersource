@@ -25,6 +25,16 @@ class CybersourceResponseTest extends TestCase {
         $this->assertTrue($responseObj->isValid());
     }
 
+    public function testConstructionAcceptsArray()
+    {
+        $model = $this->createModel(100, 'ACCEPT');
+        $array = $model->toArray();
+
+        $responseObj = new CybersourceResponse($array);
+
+        $this->assertTrue($responseObj->isValid());
+    }
+
     public function testEmptyCodeThrowsError()
     {
         $this->setExpectedException('Credibility\LaravelCybersource\Exceptions\CybersourceException', 'Response Code Not Provided');
@@ -44,6 +54,22 @@ class CybersourceResponseTest extends TestCase {
         $this->setExpectedException('Credibility\LaravelCybersource\Exceptions\CybersourceException', 'Invalid Response Code Provided');
         $model = $this->createModel(0, 'ACCEPT');
         $responseObj = new CybersourceResponse($model);
+    }
+
+    public function testErrorIsSet() {
+        $model = $this->createModel(102, 'REJECT');
+        $responseObj = new CybersourceResponse($model);
+
+        $error = $responseObj->error();
+
+        $this->assertNotEmpty($error);
+    }
+
+    public function testErrorIsNotSet() {
+        $model = $this->createModel(100, 'ACCEPT');
+        $responseObj = new CybersourceResponse($model);
+
+        $this->assertFalse($responseObj->error());
     }
 
     private function createModel($code, $decision)
