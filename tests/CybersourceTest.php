@@ -43,14 +43,18 @@ class CybersourceTest extends TestCase {
 
     public function testSendRequestReturnsCybersourceResponse()
     {
+        $request = $this->cybersource->createSubscriptionStatusRequest('123');
+
         $model = new CybersourceSOAPModel();
         $model->reasonCode = 100;
         $model->decision = 'ACCEPT';
         $this->mockRequester->shouldReceive('send')->andReturn($model);
 
-        $response = $this->cybersource->sendRequest($model);
+        $response = $this->cybersource->sendRequest($request);
+        $requestData = $response->getRequestData();
 
         $this->assertInstanceOf('Credibility\LaravelCybersource\models\CybersourceResponse', $response);
+        $this->assertEquals('123', $requestData['recurringSubscriptionInfo']['subscriptionID']);
         $this->assertTrue($response->isValid());
     }
 

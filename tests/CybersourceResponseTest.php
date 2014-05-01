@@ -1,5 +1,6 @@
 <?php namespace LaravelCybersource;
 
+use Credibility\LaravelCybersource\Cybersource;
 use Credibility\LaravelCybersource\Exceptions\CybersourceException as CybersourceException;
 use Credibility\LaravelCybersource\models\CybersourceResponse;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
@@ -70,6 +71,36 @@ class CybersourceResponseTest extends TestCase {
         $responseObj = new CybersourceResponse($model);
 
         $this->assertFalse($responseObj->error());
+    }
+
+    public function testSetRequestWithArray()
+    {
+        $array = array('value' => 'test', 'other-value' => 'other-test');
+        $model = $this->createModel(100, 'ACCEPT');
+
+        $responseObj = new CybersourceResponse($model);
+        $responseObj->setRequest($array);
+
+        $returnedArray = $responseObj->getRequestData();
+
+        $this->assertEquals($array['value'], $returnedArray['value']);
+        $this->assertEquals($array['other-value'], $returnedArray['other-value']);
+    }
+
+    public function testSetRequestWithSOAPModel()
+    {
+        $requestObj = new CybersourceSOAPModel(
+            'PHP', phpversion(),
+            'test', 'test-id', 'test-merchant-code'
+        );
+
+        $model = $this->createModel('100', 'ACCEPT');
+        $responseObj = new CybersourceResponse($model);
+        $responseObj->setRequest($requestObj);
+        $requestArray = $responseObj->getRequestData();
+
+        $this->assertEquals('PHP', $requestArray['clientLibrary']);
+        $this->assertEquals(phpversion(), $requestArray['clientLibraryVersion']);
     }
 
     private function createModel($code, $decision)

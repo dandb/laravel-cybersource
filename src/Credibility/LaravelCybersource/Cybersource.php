@@ -275,7 +275,10 @@ class Cybersource {
     public function sendRequest($request)
     {
         $rawResponse = $this->requester->send($request);
-        return new CybersourceResponse($rawResponse);
+        $csResponse = new CybersourceResponse($rawResponse);
+        $csResponse->setRequest($request);
+
+        return $csResponse;
     }
 
     // Reports

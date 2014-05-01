@@ -5,11 +5,12 @@ use Credibility\LaravelCybersource\Exceptions\CybersourceException;
 class CybersourceResponse {
 
     private $valid;
-    /**
-     * @var array
-     */
+
+    /** @var array */
     private $response;
     private $reasonCode;
+
+    private $request;
 
     private $resultCodes = array(
         '100' => 'Successful transaction.',
@@ -51,11 +52,11 @@ class CybersourceResponse {
         '520' => 'The authorization request was approved by the issuing bank but declined by CyberSource based on your Smart Authorization settings.',
     );
 
-    /************************************
+    /**
      * Response object constructor method
      *
      * @param $response Array|CybersourceSoapModel [required]
-     *
+     * @throws \Credibility\LaravelCybersource\Exceptions\CybersourceException
      */
     public function __construct($response)
     {
@@ -104,6 +105,18 @@ class CybersourceResponse {
             return $this->response[$name];
         }
         return null;
+    }
+
+    public function setRequest($request) {
+        if($request instanceof CybersourceSOAPModel) {
+            $this->request = $request->toArray();
+        } else {
+            $this->request = $request;
+        }
+    }
+
+    public function getRequestData() {
+        return $this->request;
     }
 
     /**
