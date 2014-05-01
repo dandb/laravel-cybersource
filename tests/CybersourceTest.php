@@ -116,4 +116,19 @@ class CybersourceTest extends TestCase {
         $this->assertEquals(date('Ymd'), $startDate);
     }
 
+    public function testCreateRefundRequest()
+    {
+        $requestId = 'test123';
+        $currency = 'USD';
+        $total = 100.00;
+
+        $request = $this->cybersource->createRefundRequest($requestId, $currency, $total);
+
+
+        $this->assertEquals('true', $request->ccCreditService->run);
+        $this->assertEquals($requestId, $request->ccCreditService->captureRequestID);
+        $this->assertEquals($currency, $request->purchaseTotals->currency);
+        $this->assertEquals($total, $request->purchaseTotals->grandTotalAmount);
+    }
+
 }

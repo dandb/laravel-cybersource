@@ -144,13 +144,42 @@ class Cybersource {
         return $this->sendRequest($request);
     }
 
+    /**
+     * @param $transactionId
+     * @param $currency
+     * @param $total
+     * @return \Credibility\LaravelCybersource\models\CybersourceResponse
+     */
+    public function refund($transactionId, $currency, $total)
+    {
+        $request = $this->createRefundRequest($transactionId, $currency, $total);
+        return $this->sendRequest($request);
+    }
+
+    public function createRefundRequest($requestId, $currency, $total)
+    {
+        $request = $this->createNewRequest();
+
+        $ccCreditService = new CybersourceSOAPModel();
+        $ccCreditService->run = 'true';
+        $ccCreditService->captureRequestID = $requestId;
+
+        $purchaseTotals = new CybersourceSOAPModel();
+        $purchaseTotals->currency = $currency;
+        $purchaseTotals->grandTotalAmount = $total;
+
+        $request->ccCreditService = $ccCreditService;
+        $request->purchaseTotals = $purchaseTotals;
+
+        return $request;
+    }
+
     public function createOneTimeChargeRequest($amount, $paymentToken)
     {
         $request = $this->createNewSubscriptionRequest(
             $paymentToken, 'one-time-charge', $amount, 'on-demand', 'false');
         return $request;
     }
-
 
     public function createNewSubscriptionRequest($paymentToken, $productTitle, $amount,
                                                  $frequency = 'weekly', $autoRenew = 'true', $startDate = null)
