@@ -43,7 +43,8 @@ class CybersourceHelperTest extends TestCase {
         $string = 'header1,header2' . "\n";
         $string .= 'val1,val2' . "\n";
 
-        $array = CybersourceHelper::str_getcsv($string)[0];
+        $array = CybersourceHelper::str_getcsv($string);
+        $array = $array[0];
 
         $this->assertArrayHasKey('header1', $array);
         $this->assertArrayHasKey('header2', $array);
