@@ -302,6 +302,13 @@ class Cybersource {
         return $this->sendReportRequest('TransactionExceptionDetailReport', $date);
     }
 
+    /**
+     * @codeCoverageIgnore
+     * @param $report_name
+     * @param $date
+     * @return array
+     * @throws Exceptions\CybersourceException
+     */
     private function sendReportRequest($report_name, $date)
     {
         $merchant_id = $this->app->make('config')->get('laravel-cybersource::merchant_id');
