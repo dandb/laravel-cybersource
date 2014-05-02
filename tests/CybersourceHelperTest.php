@@ -38,4 +38,18 @@ class CybersourceHelperTest extends TestCase {
         $this->assertEquals($signResult, CybersourceHelper::sign($params, $key));
     }
 
+    public function testStrGetCSV()
+    {
+        $string = 'header1,header2' . "\n";
+        $string .= 'val1,val2' . "\n";
+
+        $array = CybersourceHelper::str_getcsv($string)[0];
+
+        $this->assertArrayHasKey('header1', $array);
+        $this->assertArrayHasKey('header2', $array);
+
+        $this->assertEquals('val1', $array['header1']);
+        $this->assertEquals('val2', $array['header2']);
+    }
+
 } 
