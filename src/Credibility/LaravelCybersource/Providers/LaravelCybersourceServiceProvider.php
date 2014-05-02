@@ -2,6 +2,7 @@
 
 use Credibility\LaravelCybersource\Cybersource;
 use Credibility\LaravelCybersource\SOAPClient;
+use Credibility\LaravelCybersource\SOAPClientFactory;
 use Credibility\LaravelCybersource\SOAPRequester;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,7 +36,8 @@ class LaravelCybersourceServiceProvider extends ServiceProvider {
 	{
         $this->app->bind('cybersource', function($app) {
             $client = new SOAPClient($app);
-            $requester = new SOAPRequester($client, $app);
+            $factory = new SOAPClientFactory($app);
+            $requester = new SOAPRequester($client, $app, $factory);
             return new Cybersource($requester, $app);
         });
 	}
