@@ -94,6 +94,7 @@ class CybersourceResponse {
         return $code;
     }
 
+    // @codeCoverageIgnoreStart
     public function __set($name, $value)
     {
         $this->response[$name] = $value;
@@ -106,6 +107,7 @@ class CybersourceResponse {
         }
         return null;
     }
+    // @codeCoverageIgnoreEnd
 
     public function setRequest($request) {
         if($request instanceof CybersourceSOAPModel) {

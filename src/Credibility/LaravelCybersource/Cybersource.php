@@ -85,6 +85,7 @@ class Cybersource {
         $this->app = $app;
     }
 
+    // @codeCoverageIgnoreStart
     /**
      * @param $subscriptionId
      * @return \Credibility\LaravelCybersource\models\CybersourceResponse
@@ -155,6 +156,8 @@ class Cybersource {
         $request = $this->createRefundRequest($transactionId, $currency, $total);
         return $this->sendRequest($request);
     }
+
+    // @codeCoverageIgnoreEnd
 
     public function createRefundRequest($requestId, $currency, $total)
     {
@@ -281,7 +284,7 @@ class Cybersource {
         return $csResponse;
     }
 
-    // Reports
+    // Reports @codeCoverageIgnoreStart
     public function getSubscriptions($date)
     {
         return $this->sendReportRequest('SubscriptionDetailReport', $date);
@@ -303,7 +306,6 @@ class Cybersource {
     }
 
     /**
-     * @codeCoverageIgnore
      * @param $report_name
      * @param $date
      * @return array
@@ -373,6 +375,8 @@ class Cybersource {
         return $records;
 
     }
+
+    // @codeCoverageIgnoreEnd
 
     private function getTodaysDate()
     {
