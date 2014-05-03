@@ -284,7 +284,8 @@ class Cybersource {
         return $csResponse;
     }
 
-    // Reports @codeCoverageIgnoreStart
+    // Reports
+    // @codeCoverageIgnoreStart
     public function getSubscriptions($date)
     {
         return $this->sendReportRequest('SubscriptionDetailReport', $date);

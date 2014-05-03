@@ -77,7 +77,6 @@ class CybersourceSOAPModelTest extends TestCase {
 
     private function getCybersourceSOAPModel()
     {
-        
         return new CybersourceSOAPModel('PHP', phpversion(), $this->environment, $this->merchantId);
     }
 
