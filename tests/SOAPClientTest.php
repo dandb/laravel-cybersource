@@ -20,30 +20,6 @@ class SOAPClientTest extends TestCase {
         $this->assertNotNull($this->client);
     }
 
-    public function testGetInstance()
-    {
-        $timeout = 10;
-
-        $contextOpts = array(
-            'http' => array(
-                'timeout' => $timeout
-            )
-        );
-
-        $context = stream_context_create($contextOpts);
-
-        $soapOts = array(
-            'compression' => SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP | SOAP_COMPRESSION_DEFLATE,
-            'encoding' => 'utf-8',
-            'exceptions' => true,
-            'connection_timeout' => $timeout,
-            'stream_context' => $context,
-            'cache_wsdl' => WSDL_CACHE_MEMORY
-        );
-
-        $newClient = SOAPClient::getInstance($soapOts);
-    }
-
     public function testAddWSSEToken()
     {
         $this->client->addWSSEToken();

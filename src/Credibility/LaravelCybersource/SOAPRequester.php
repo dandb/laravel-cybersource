@@ -12,17 +12,19 @@ use Illuminate\Foundation\Application;
  */
 class SOAPRequester {
 
-    /**
-     * @var Illuminate\Foundation\Application
-     */
+    /** @var  Illuminate\Foundation\Application */
     public $app;
+    /** @var  SOAPClient */
     public $soapClient;
+    /** @var  SOAPClientFactory */
+    public $clientFactory;
     public $timeout;
 
-    public function __construct($soapClient, Application $app)
+    public function __construct($soapClient, $app, $factory)
     {
         $this->app = $app;
         $this->soapClient = $soapClient;
+        $this->clientFactory = $factory;
         $this->timeout = $this->app->make('config')->get('laravel-cybersource::timeout');
     }
 
@@ -53,7 +55,7 @@ class SOAPRequester {
         );
 
         try {
-            $this->soapClient = SOAPClient::getInstance($soapOts);
+            $this->soapClient = $this->clientFactory->getInstance($soapOts);
         } catch(\SoapFault $sf) {
             throw new CybersourceConnectionException($sf->getMessage(), $sf->getCode());
         }

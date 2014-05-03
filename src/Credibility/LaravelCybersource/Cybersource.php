@@ -85,6 +85,7 @@ class Cybersource {
         $this->app = $app;
     }
 
+    // @codeCoverageIgnoreStart
     /**
      * @param $subscriptionId
      * @return \Credibility\LaravelCybersource\models\CybersourceResponse
@@ -155,6 +156,8 @@ class Cybersource {
         $request = $this->createRefundRequest($transactionId, $currency, $total);
         return $this->sendRequest($request);
     }
+
+    // @codeCoverageIgnoreEnd
 
     public function createRefundRequest($requestId, $currency, $total)
     {
@@ -282,6 +285,7 @@ class Cybersource {
     }
 
     // Reports
+    // @codeCoverageIgnoreStart
     public function getSubscriptions($date)
     {
         return $this->sendReportRequest('SubscriptionDetailReport', $date);
@@ -302,6 +306,12 @@ class Cybersource {
         return $this->sendReportRequest('TransactionExceptionDetailReport', $date);
     }
 
+    /**
+     * @param $report_name
+     * @param $date
+     * @return array
+     * @throws Exceptions\CybersourceException
+     */
     private function sendReportRequest($report_name, $date)
     {
         $merchant_id = $this->app->make('config')->get('laravel-cybersource::merchant_id');
@@ -366,6 +376,8 @@ class Cybersource {
         return $records;
 
     }
+
+    // @codeCoverageIgnoreEnd
 
     private function getTodaysDate()
     {

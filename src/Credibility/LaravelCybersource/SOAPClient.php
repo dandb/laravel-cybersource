@@ -75,7 +75,8 @@ class SOAPClient extends BeSimpleSoapClient {
      */
     public static function getInstance($options = null)
     {
-        return new SOAPClient(static::$app, $options);
+        $factory = new SOAPClientFactory(static::$app);
+        return $factory->getInstance($options);
     }
 
 
@@ -88,6 +89,7 @@ class SOAPClient extends BeSimpleSoapClient {
      * @param null $one_way
      * @return string
      * @throws Exceptions\CybersourceException
+     * @codeCoverageIgnore
      */
     public function doRequest($request, $location, $action, $version, $one_way = null)
     {
