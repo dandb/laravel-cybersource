@@ -46,6 +46,10 @@ class CybersourceHelper {
         while( !feof( $t ) ) {
             $row = fgetcsv( $t, null, $delimiter, $enclosure, $escape );
 
+            if(count($headers) != count($row)) {
+                $diff = abs(count($headers) - count($row));
+                $row = array_slice($row, 0, count($row) - $diff);
+            }
             $row = array_combine( $headers, $row );
 
             $rows[] = $row;
