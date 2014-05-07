@@ -316,8 +316,8 @@ class Cybersource {
     {
         $merchant_id = $this->app->make('config')->get('laravel-cybersource::merchant_id');
         $endpoint = $this->app->make('config')->get('laravel-cybersource::reports.endpoint');
-        $username = $this->app->make('config')->get('laravel-cybersource::username');
-        $password = $this->app->make('config')->get('laravel-cybersource::password');
+        $username = $this->app->make('config')->get('laravel-cybersource::reports.username');
+        $password = $this->app->make('config')->get('laravel-cybersource::reports.password');
 
         if ( !$date instanceof \DateTime ) {
             $date = new \DateTime($date);
@@ -334,7 +334,7 @@ class Cybersource {
             $merchant_id . '/' .
             $report_name . '.csv';
 
-        $result = @file_get_contents( $url );
+        $result = file_get_contents( $url );
 
         if ( $result === false ) {
 
