@@ -78,6 +78,28 @@ class CybersourceTest extends TestCase {
         $this->assertEquals(date('Ymd'), $startDate);
     }
 
+    public function testCreateNewSubscriptionWithMerchantReferenceNumber()
+    {
+        $paymentToken = 'test123';
+        $productTitle = 'Test Title';
+        $amount = 100.00;
+
+        $request = $this->cybersource->createNewSubscriptionRequest($paymentToken, $productTitle,
+            $amount, 'weekly', 'true', null, 'merchant_ref_num');
+
+        $startDate = $request->recurringSubscriptionInfo->startDate;
+        $autoRenew = $request->recurringSubscriptionInfo->automaticRenew;
+        $frequency = $request->recurringSubscriptionInfo->frequency;
+
+        $this->assertEquals('merchant_ref_num', $request->merchantReferenceCode);
+        $this->assertEquals($paymentToken, $request->paySubscriptionCreateService->paymentRequestID);
+        $this->assertEquals($productTitle, $request->subscription->title);
+        $this->assertEquals($amount, $request->recurringSubscriptionInfo->amount);
+        $this->assertEquals('weekly', $frequency);
+        $this->assertEquals('true', $autoRenew);
+        $this->assertEquals(date('Ymd'), $startDate);
+    }
+
     public function testCreateUpdateSubscriptionRequest()
     {
         $paymentToken = 'test123';

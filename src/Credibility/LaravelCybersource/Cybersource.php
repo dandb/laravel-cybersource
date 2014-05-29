@@ -103,12 +103,13 @@ class Cybersource {
      * @param $frequency
      * @param bool $autoRenew
      * @param null $startDate
+     * @param null $merchantReferenceNumber
      * @return \Credibility\LaravelCybersource\models\CybersourceResponse
      */
-    public function createSubscription($paymentToken, $productTitle, $amount, $frequency, $autoRenew = true, $startDate = null)
+    public function createSubscription($paymentToken, $productTitle, $amount, $frequency, $autoRenew = true, $startDate = null, $merchantReferenceNumber = null)
     {
         $request = $this->createNewSubscriptionRequest($paymentToken, $productTitle,
-            $amount, $frequency, $autoRenew, $startDate
+            $amount, $frequency, $autoRenew, $startDate, $merchantReferenceNumber
         );
         return $this->sendRequest($request);
     }
@@ -185,10 +186,11 @@ class Cybersource {
     }
 
     public function createNewSubscriptionRequest($paymentToken, $productTitle, $amount,
-                                                 $frequency = 'weekly', $autoRenew = 'true', $startDate = null)
+                                                 $frequency = 'weekly', $autoRenew = 'true', $startDate = null,
+                                                 $merchantReferenceNumber = null)
     {
         $startDate = empty($startDate) ? $this->getTodaysDate() : $startDate;
-        $request = $this->createNewRequest();
+        $request = $this->createNewRequest($merchantReferenceNumber);
 
         $paySubscriptionCreateService = new CybersourceSOAPModel();
         $paySubscriptionCreateService->run = 'true';
@@ -265,13 +267,14 @@ class Cybersource {
 
 
 
-    public function createNewRequest()
+    public function createNewRequest($merchantReferenceNumber = null)
     {
+        $ref = is_null($merchantReferenceNumber) ? $this->app->make('config')->get('laravel-cybersource::merchant_reference_code') : $merchantReferenceNumber;
         return new CybersourceSOAPModel(
             'PHP', phpversion(),
             $this->app->environment(),
             $this->app->make('config')->get('laravel-cybersource::merchant_id'),
-            $this->app->make('config')->get('laravel-cybersource::merchant_reference_code')
+            $ref
         );
     }
 
