@@ -16,6 +16,7 @@ class CybersourceResponse {
         '100' => 'Successful transaction.',
         '101' => 'The request is missing one or more required fields.',
         '102' => 'One or more fields in the request contains invalid data.',
+        '104' => 'The access key and transaction uuid fields for this authorization request matches the access_key and transaction_uuid of another authorization request that you sent within the past 15 minutes.',
         '110' => 'Only a partial amount was approved.',
         '150' => 'Error: General system failure.',
         '151' => 'Error: The request was received but there was a server timeout.',
@@ -32,6 +33,7 @@ class CybersourceResponse {
         '210' => 'The card has reached the credit limit.',
         '211' => 'Invalid CVN.',
         '221' => 'The customer matched an entry on the processor\'s negative file.',
+        '222' => 'Account frozen.',
         '230' => 'The authorization request was approved by the issuing bank but declined by CyberSource because it did not pass the CVN check.',
         '231' => 'Invalid credit card number.',
         '232' => 'The card type is not accepted by the payment processor.',
@@ -49,6 +51,8 @@ class CybersourceResponse {
         '246' => 'The capture or credit is not voidable because the capture or credit information has laready been submitted to your processor. Or, you requested a void for a type of transaction that cannot be voided.',
         '247' => 'You requested a credit for a capture that was previously voided.',
         '250' => 'Error: The request was received, but there was a timeout at the payment processor.',
+        '475' => 'The cardholder is enrolled for payer authentication.',
+        '476' => 'Payer authentication could not be authenticated.',
         '520' => 'The authorization request was approved by the issuing bank but declined by CyberSource based on your Smart Authorization settings.',
     );
 
