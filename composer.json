@@ -10,8 +10,8 @@
     "license": "MIT",
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "4.1.*",
-		"besimple/soap-client": "0.2.2",
+        "illuminate/support": "4.2.*",
+		"besimple/soap-client": "0.2.5",
         "goetas/xsd2php": "dev-master"
     },
     "require-dev": {
