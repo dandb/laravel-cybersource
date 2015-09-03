@@ -12,7 +12,7 @@
         "php": ">=5.4.0",
         "illuminate/support": "4.1.*",
 		"besimple/soap-client": "0.2.2",
-        "goetas/xsd2php": "dev-master"
+        "goetas/xsd2php":"2.*@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "4.0.*",
