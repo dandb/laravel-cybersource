@@ -11,7 +11,7 @@ class SOAPClientTest extends TestCase {
     public function setUp()
     {
         parent::setUp();
-        $this->client = new SOAPClient($this->mockApp, null);
+        $this->client = new SOAPClient($this->mockApp);
     }
 
     public function testConstruct()

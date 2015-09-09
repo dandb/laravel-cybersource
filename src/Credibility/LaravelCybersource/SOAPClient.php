@@ -2,16 +2,9 @@
 
 use BeSimple\SoapClient\SoapClient as BeSimpleSoapClient;
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Log;
 
 class SOAPClient extends BeSimpleSoapClient {
 
-    /**
-     * @var Illuminate\Foundation\Application
-     */
     public static $app;
 
     const DOM_VERSION = '1.0';
@@ -31,7 +24,7 @@ class SOAPClient extends BeSimpleSoapClient {
      * Constructs a client off of the
      * configured WSDL
      */
-    public function __construct(Application $app, $options = null)
+    public function __construct($app, array $options = [])
     {
         static::$app = $app;
 
@@ -39,11 +32,7 @@ class SOAPClient extends BeSimpleSoapClient {
         $this->merchantId = static::$app->make('config')->get('laravel-cybersource::merchant_id');
         $this->transactionId = static::$app->make('config')->get('laravel-cybersource::transaction_id');
 
-        if(is_null($options)) {
-            parent::__construct($this->wsdl);
-        } else {
-            parent::__construct($this->wsdl, $options);
-        }
+        parent::__construct($this->wsdl, $options);
     }
 
     public function addWSSEToken()
@@ -70,10 +59,10 @@ class SOAPClient extends BeSimpleSoapClient {
 
     /**
      * Static getInstance Method for updating SOAP options
-     * @param null $options
+     * @param array $options
      * @return SOAPClient
      */
-    public static function getInstance($options = null)
+    public static function getInstance(array $options = [])
     {
         $factory = new SOAPClientFactory(static::$app);
         return $factory->getInstance($options);

@@ -4,10 +4,9 @@ use Illuminate\Foundation\Application;
 
 class SOAPClientFactory {
 
-    /** @var Illuminate\Foundation\Application */
     protected $app;
 
-    public function __construct(Application $app)
+    public function __construct($app)
     {
         $this->app = $app;
     }
@@ -17,7 +16,7 @@ class SOAPClientFactory {
      * @param null $options
      * @return SOAPClient
      */
-    public function getInstance($options = null)
+    public function getInstance(array $options = [])
     {
         return new SOAPClient($this->app, $options);
     }
