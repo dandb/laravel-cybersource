@@ -43,8 +43,7 @@ class CybersourceHelper {
         $headers = fgetcsv( $t, null, $delimiter, $enclosure, $escape );
 
         $rows = array();
-        while( !feof( $t ) ) {
-            $row = fgetcsv( $t, null, $delimiter, $enclosure, $escape );
+        while( !feof( $t ) && $row = fgetcsv( $t, null, $delimiter, $enclosure, $escape )) {
 
             if(count($headers) != count($row)) {
                 $diff = abs(count($headers) - count($row));

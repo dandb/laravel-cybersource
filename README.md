@@ -11,7 +11,7 @@ This package wraps the Cybersource SOAP API in a convenient, easy to use package
 Install using composer:
 
     "require": {
-      "credibility/laravel-cybersource": "dev-master"  
+      "credibility/laravel-cybersource": "3.0.*" 
     }
     
 See [Packagist](https://packagist.org/packages/credibility/laravel-cybersource) for latest version 
