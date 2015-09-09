@@ -1,13 +1,13 @@
 <?php namespace Credibility\LaravelCybersource;
 
-use Illuminate\Foundation\Application;
+use Illuminate\Container\Container;
 
 class SOAPClientFactory {
 
-    /** @var Illuminate\Foundation\Application */
+    /** @var Container */
     protected $app;
 
-    public function __construct(Application $app)
+    public function __construct(Container $app)
     {
         $this->app = $app;
     }

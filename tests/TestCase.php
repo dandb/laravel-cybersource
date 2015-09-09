@@ -39,7 +39,7 @@ class TestCase extends \PHPUnit_Framework_TestCase {
             ->with('app.timezone')
             ->andReturn('UTC');
 
-        $this->mockApp = m::mock('Illuminate\Foundation\Application');
+        $this->mockApp = m::mock('Illuminate\Container\Container');
 
         $this->mockApp
             ->shouldReceive('environment')
