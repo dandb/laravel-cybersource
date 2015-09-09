@@ -2,13 +2,9 @@
 
 use BeSimple\SoapClient\SoapClient as BeSimpleSoapClient;
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
-use Illuminate\Container\Container;
 
 class SOAPClient extends BeSimpleSoapClient {
 
-    /**
-     * @var Container
-     */
     public static $app;
 
     const DOM_VERSION = '1.0';
@@ -25,22 +21,24 @@ class SOAPClient extends BeSimpleSoapClient {
     protected $transactionId;
 
     /**
-     * @param Container $app
-     * @param null $options
+     * @param string $app
+     * @param array $options
      */
-    public function __construct(Container $app, $options = null)
+    public function __construct($app, array $options = [])
     {
+        if($app instanceof Laravel\Lumen\Application) {
+            $this->wsdl = $app->make('config')->get('laravel-cybersource.wsdl_endpoint');
+            $this->merchantId = $app->make('config')->get('laravel-cybersource.merchant_id');
+            $this->transactionId = $app->make('config')->get('laravel-cybersource.transaction_id');
+        } else {
+            $this->wsdl = $app->make('config')->get('laravel-cybersource::wsdl_endpoint');
+            $this->merchantId = $app->make('config')->get('laravel-cybersource::merchant_id');
+            $this->transactionId = $app->make('config')->get('laravel-cybersource::transaction_id');
+        }
+
         static::$app = $app;
 
-        $this->wsdl = static::$app->make('config')->get('laravel-cybersource::wsdl_endpoint');
-        $this->merchantId = static::$app->make('config')->get('laravel-cybersource::merchant_id');
-        $this->transactionId = static::$app->make('config')->get('laravel-cybersource::transaction_id');
-
-        if(is_null($options)) {
-            parent::__construct($this->wsdl);
-        } else {
-            parent::__construct($this->wsdl, $options);
-        }
+        parent::__construct($this->wsdl, $options);
     }
 
     public function addWSSEToken()

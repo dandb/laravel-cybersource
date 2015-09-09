@@ -3,13 +3,9 @@
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
 use Credibility\LaravelCybersource\models\CybersourceResponse;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
-use Illuminate\Container\Container;
 
 class Cybersource {
 
-    /**
-     * @var Container
-     */
     public $app;
     /**
      * @var SOAPRequester
@@ -78,7 +74,7 @@ class Cybersource {
     );
 
 
-    public function __construct($requester, Container $app)
+    public function __construct($requester, $app)
     {
         $this->requester = $requester;
         $this->app = $app;

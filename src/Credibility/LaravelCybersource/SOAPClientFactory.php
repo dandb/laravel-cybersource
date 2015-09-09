@@ -1,13 +1,10 @@
 <?php namespace Credibility\LaravelCybersource;
 
-use Illuminate\Container\Container;
-
 class SOAPClientFactory {
 
-    /** @var Container */
     protected $app;
 
-    public function __construct(Container $app)
+    public function __construct($app)
     {
         $this->app = $app;
     }
@@ -17,7 +14,7 @@ class SOAPClientFactory {
      * @param null $options
      * @return SOAPClient
      */
-    public function getInstance($options = null)
+    public function getInstance($options = [])
     {
         return new SOAPClient($this->app, $options);
     }

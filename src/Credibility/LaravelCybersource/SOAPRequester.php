@@ -2,7 +2,6 @@
 
 use Credibility\LaravelCybersource\Exceptions\CybersourceConnectionException;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
-use Illuminate\Container\Container;
 
 /**
  * Class SOAPRequester creates SOAP requests for Cybersource and uses
@@ -11,7 +10,6 @@ use Illuminate\Container\Container;
  */
 class SOAPRequester {
 
-    /** @var  Container */
     public $app;
     /** @var  SOAPClient */
     public $soapClient;

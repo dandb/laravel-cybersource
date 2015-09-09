@@ -1,7 +1,6 @@
 <?php namespace LaravelCybersource;
 
 use Credibility\LaravelCybersource\SOAPClientFactory;
-use LaravelCybersource\TestCase;
 use \Mockery as m;
 
 class SOAPClientFactoryTest extends TestCase {
