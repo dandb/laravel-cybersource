@@ -12,7 +12,7 @@ class SOAPClientFactoryTest extends TestCase {
     public function setUp()
     {
         parent::setUp();
-        $this->factory = new SOAPClientFactory($this->mockApp);
+        $this->factory = new SOAPClientFactory();
     }
 
     public function testGetInstanceReturnsSoapClient()

@@ -3,6 +3,16 @@
 return array(
 
     /**
+     * The timezone to be used by cybersource
+     */
+    'env' => 'test',
+
+    /**
+     * The timezone to be used by cybersource
+     */
+    'timezone' => 'America/Los_Angeles',
+
+    /**
      * The organization ID when creating the cybersource account
      */
     'organization_id' => '',
@@ -31,6 +41,8 @@ return array(
         'endpoint' => 'ebctest.cybersource.com/ebctest',
         'version' => '0.1',
         'api_version' =>  '2011-03',
+        'username' => '',
+        'password' => '',
     ),
 
     /**

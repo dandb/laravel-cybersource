@@ -1,6 +1,7 @@
 <?php namespace Credibility\LaravelCybersource;
 
 use BeSimple\SoapClient\SoapClient as BeSimpleSoapClient;
+use Credibility\LaravelCybersource\Configs\ServerConfigs;
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
 
 class SOAPClient extends BeSimpleSoapClient {
@@ -24,13 +25,11 @@ class SOAPClient extends BeSimpleSoapClient {
      * Constructs a client off of the
      * configured WSDL
      */
-    public function __construct($app, array $options = [])
+    public function __construct(ServerConfigs $configs, array $options = [])
     {
-        static::$app = $app;
-
-        $this->wsdl = static::$app->make('config')->get('laravel-cybersource::wsdl_endpoint');
-        $this->merchantId = static::$app->make('config')->get('laravel-cybersource::merchant_id');
-        $this->transactionId = static::$app->make('config')->get('laravel-cybersource::transaction_id');
+        $this->wsdl = $configs->getWsdlEndpoint();
+        $this->merchantId = $configs->getMerchantId();
+        $this->transactionId = $configs->getTransactionId();
 
         parent::__construct($this->wsdl, $options);
     }

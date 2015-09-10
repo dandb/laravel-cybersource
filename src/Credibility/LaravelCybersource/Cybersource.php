@@ -3,20 +3,18 @@
 use Credibility\LaravelCybersource\Exceptions\CybersourceException;
 use Credibility\LaravelCybersource\models\CybersourceResponse;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\App;
+use Credibility\LaravelCybersource\Configs\Factory as ConfigsFactory;
 
 class Cybersource {
 
-    /**
-     * @var Illuminate\Foundation\Application
-     */
-    public $app;
     /**
      * @var SOAPRequester
      */
     private $requester;
     public $timeout = 10;
+
+    /* ServerConfigs */
+    protected $configs;
 
     public $avsCodes = array(
         'A' => 'Partial match: Street address matches, but 5-digit and 9-digit postal codes do not match.',
@@ -79,10 +77,10 @@ class Cybersource {
     );
 
 
-    public function __construct($requester, Application $app)
+    public function __construct($requester)
     {
         $this->requester = $requester;
-        $this->app = $app;
+        $this->configs = (new ConfigsFactory())->getFromConfigFile();
     }
 
     // @codeCoverageIgnoreStart
@@ -269,12 +267,14 @@ class Cybersource {
 
     public function createNewRequest($merchantReferenceNumber = null)
     {
-        $ref = is_null($merchantReferenceNumber) ? $this->app->make('config')->get('laravel-cybersource::merchant_reference_code') : $merchantReferenceNumber;
+        if(is_null($merchantReferenceNumber)) {
+            $merchantReferenceNumber = $this->configs->getMerchantReferenceCode();
+        }
         return new CybersourceSOAPModel(
             'PHP', phpversion(),
-            $this->app->environment(),
-            $this->app->make('config')->get('laravel-cybersource::merchant_id'),
-            $ref
+            $this->configs->getEnv(),
+            $this->configs->getMerchantId(),
+            $merchantReferenceNumber
         );
     }
 
@@ -317,10 +317,12 @@ class Cybersource {
      */
     private function sendReportRequest($report_name, $date)
     {
-        $merchant_id = $this->app->make('config')->get('laravel-cybersource::merchant_id');
-        $endpoint = $this->app->make('config')->get('laravel-cybersource::reports.endpoint');
-        $username = $this->app->make('config')->get('laravel-cybersource::reports.username');
-        $password = $this->app->make('config')->get('laravel-cybersource::reports.password');
+        $merchant_id = $this->configs->getMerchantId();
+
+        $reportsArray = $this->configs->getReports();
+        $endpoint = $reportsArray['endpoint'];
+        $username = $reportsArray['username'];
+        $password = $reportsArray['password'];
 
         if ( !$date instanceof \DateTime ) {
             $date = new \DateTime($date);
@@ -384,7 +386,7 @@ class Cybersource {
 
     private function getTodaysDate()
     {
-        date_default_timezone_set($this->app->make('config')->get('app.timezone'));
+        date_default_timezone_set($this->configs->getTimezone());
         return date('Ymd');
     }
 

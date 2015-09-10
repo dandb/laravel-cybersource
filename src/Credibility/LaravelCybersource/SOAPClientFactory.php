@@ -1,15 +1,8 @@
 <?php namespace Credibility\LaravelCybersource;
 
-use Illuminate\Foundation\Application;
+use Credibility\LaravelCybersource\Configs\Factory as ConfigsFactory;
 
 class SOAPClientFactory {
-
-    protected $app;
-
-    public function __construct($app)
-    {
-        $this->app = $app;
-    }
 
     /**
      * Static getInstance Method for updating SOAP options
@@ -18,7 +11,8 @@ class SOAPClientFactory {
      */
     public function getInstance(array $options = [])
     {
-        return new SOAPClient($this->app, $options);
+        $configs = (new ConfigsFactory())->getFromConfigFile();
+        return new SOAPClient($configs, $options);
     }
 
 

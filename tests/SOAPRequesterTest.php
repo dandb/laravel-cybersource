@@ -21,7 +21,7 @@ class SOAPRequesterTest extends TestCase {
         parent::setUp();
         $this->mockClient = m::mock('SOAPClient');
         $this->factory = m::mock('SOAPFactory');
-        $this->soapRequester = new SOAPRequester($this->mockClient, $this->mockApp, $this->factory);
+        $this->soapRequester = new SOAPRequester($this->mockClient, $this->factory);
     }
 
     public function testConvertToModelCreatesCybersourceSOAPModel()

@@ -1,9 +1,8 @@
 <?php namespace Credibility\LaravelCybersource;
 
 use Credibility\LaravelCybersource\Exceptions\CybersourceConnectionException;
-use Credibility\LaravelCybersource\Exceptions\CybersourceException;
+use Credibility\LaravelCybersource\Configs\Factory as ConfigsFactory;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
-use Illuminate\Foundation\Application;
 
 /**
  * Class SOAPRequester creates SOAP requests for Cybersource and uses
@@ -12,20 +11,19 @@ use Illuminate\Foundation\Application;
  */
 class SOAPRequester {
 
-    /** @var  Illuminate\Foundation\Application */
-    public $app;
     /** @var  SOAPClient */
     public $soapClient;
     /** @var  SOAPClientFactory */
     public $clientFactory;
     public $timeout;
 
-    public function __construct($soapClient, $app, $factory)
+    public function __construct($soapClient, $factory)
     {
-        $this->app = $app;
         $this->soapClient = $soapClient;
         $this->clientFactory = $factory;
-        $this->timeout = $this->app->make('config')->get('laravel-cybersource::timeout');
+
+        $configs = (new ConfigsFactory())->getFromConfigFile();
+        $this->timeout = $configs->getTimeout();
     }
 
     public function send(CybersourceSOAPModel $request)

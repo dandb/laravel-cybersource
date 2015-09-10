@@ -1,5 +1,6 @@
 <?php namespace Credibility\LaravelCybersource\Providers;
 
+use Credibility\LaravelCybersource\Configs\Factory as ConfigsFactory;
 use Credibility\LaravelCybersource\Cybersource;
 use Credibility\LaravelCybersource\SOAPClient;
 use Credibility\LaravelCybersource\SOAPClientFactory;
@@ -8,24 +9,7 @@ use Illuminate\Support\ServiceProvider;
 
 class LaravelCybersourceServiceProvider extends ServiceProvider {
 
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = true;
 
-	/**
-	 * Bootstrap the application events.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
-        $namespace = 'laravel-cybersource';
-        $path = __DIR__ . '/../../..';
-		$this->package('credibility/laravel-cybersource', $namespace, $path);
-	}
 
 	/**
 	 * Register the service provider.
@@ -34,11 +18,12 @@ class LaravelCybersourceServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-        $this->app->bind('cybersource', function($app) {
-            $client = new SOAPClient($app);
-            $factory = new SOAPClientFactory($app);
-            $requester = new SOAPRequester($client, $app, $factory);
-            return new Cybersource($requester, $app);
+        $this->app->bind('Credibility\LaravelCybersource\Cybersource', function() {
+            $configs = (new ConfigsFactory())->getFromConfigFile();
+            $client = new SOAPClient($configs, []);
+            $factory = new SOAPClientFactory();
+            $requester = new SOAPRequester($client, $factory);
+            return new Cybersource($requester);
         });
 	}
 
