@@ -13,7 +13,7 @@ class Factory {
 
     public function getFromConfigFile()
     {
-        $configFile = __DIR__ .'/../../../../../../config/laravel-cybersource.php';
+        $configFile = __DIR__ .'/../../../../../../../config/laravel-cybersource.php';
 
         $defaultConfigs = require(__DIR__ . '/../../../config/config.php');
 
