@@ -1,10 +1,7 @@
 <?php namespace LaravelCybersource;
 
-use Credibility\LaravelCybersource\Cybersource;
-use Credibility\LaravelCybersource\Exceptions\CybersourceException as CybersourceException;
 use Credibility\LaravelCybersource\models\CybersourceResponse;
 use Credibility\LaravelCybersource\models\CybersourceSOAPModel;
-use LaravelCybersource\TestCase;
 use \Mockery as m;
 
 class CybersourceResponseTest extends TestCase {
@@ -12,7 +9,7 @@ class CybersourceResponseTest extends TestCase {
     public function testResponseDoesNotBreak()
     {
         $model = $this->createModel(101, 'REJECT');
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
 
         $this->assertFalse($responseObj->isValid());
         $this->assertNotEmpty($responseObj->getDetails());
@@ -21,7 +18,7 @@ class CybersourceResponseTest extends TestCase {
     public function testConstructionSetsValidity()
     {
         $model = $this->createModel(100, 'ACCEPT');
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
 
         $this->assertTrue($responseObj->isValid());
     }
@@ -31,7 +28,7 @@ class CybersourceResponseTest extends TestCase {
         $model = $this->createModel(100, 'ACCEPT');
         $array = $model->toArray();
 
-        $responseObj = new CybersourceResponse($array);
+        $responseObj = new CybersourceResponse($array, $this->configs->getResultCodes());
 
         $this->assertTrue($responseObj->isValid());
     }
@@ -40,26 +37,26 @@ class CybersourceResponseTest extends TestCase {
     {
         $this->setExpectedException('Credibility\LaravelCybersource\Exceptions\CybersourceException', 'Response Code Not Provided');
         $model = $this->createModel(null, null);
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
     }
 
     public function testEmptyDecisionThrowsError()
     {
         $this->setExpectedException('Credibility\LaravelCybersource\Exceptions\CybersourceException', 'Decision Not Provided');
         $model = $this->createModel(100, null);
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
     }
 
     public function testInvalidCodeThrowsError()
     {
         $this->setExpectedException('Credibility\LaravelCybersource\Exceptions\CybersourceException', 'Invalid Response Code Provided');
         $model = $this->createModel(0, 'ACCEPT');
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
     }
 
     public function testErrorIsSet() {
         $model = $this->createModel(102, 'REJECT');
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
 
         $error = $responseObj->error();
 
@@ -68,7 +65,7 @@ class CybersourceResponseTest extends TestCase {
 
     public function testErrorIsNotSet() {
         $model = $this->createModel(100, 'ACCEPT');
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
 
         $this->assertFalse($responseObj->error());
     }
@@ -78,7 +75,7 @@ class CybersourceResponseTest extends TestCase {
         $array = array('value' => 'test', 'other-value' => 'other-test');
         $model = $this->createModel(100, 'ACCEPT');
 
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
         $responseObj->setRequest($array);
 
         $returnedArray = $responseObj->getRequestData();
@@ -95,7 +92,7 @@ class CybersourceResponseTest extends TestCase {
         );
 
         $model = $this->createModel('100', 'ACCEPT');
-        $responseObj = new CybersourceResponse($model);
+        $responseObj = new CybersourceResponse($model, $this->configs->getResultCodes());
         $responseObj->setRequest($requestObj);
         $requestArray = $responseObj->getRequestData();
 

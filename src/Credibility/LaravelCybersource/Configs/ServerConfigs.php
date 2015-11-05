@@ -19,6 +19,8 @@ class ServerConfigs {
     protected $password;
     /* @var array */
     protected $reports;
+    /* @var array */
+    protected $resultCodes;
 
     /**
      * Optionally build the configs object with array of configs
@@ -51,6 +53,7 @@ class ServerConfigs {
         $this->setUsername(isset($configs['username']) ? $configs['username'] : null);
         $this->setPassword(isset($configs['password']) ? $configs['password'] : null);
         $this->setReports(isset($configs['reports']) ? $configs['reports'] : null);
+        $this->setResultCodes(isset($configs['result_codes']) ? $configs['result_codes'] : null);
     }
 
     /**
@@ -259,5 +262,21 @@ class ServerConfigs {
     public function setReports($reports)
     {
         $this->reports = $reports;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResultCodes()
+    {
+        return $this->resultCodes;
+    }
+
+    /**
+     * @param array $resultCodes
+     */
+    public function setResultCodes($resultCodes)
+    {
+        $this->resultCodes = $resultCodes;
     }
 }
